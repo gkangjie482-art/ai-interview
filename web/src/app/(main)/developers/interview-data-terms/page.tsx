@@ -162,7 +162,16 @@ export default function InterviewDataTermsPage() {
           <LegalParagraph>
             本規約および本データに関するお問い合わせは、下記までご連絡ください。
           </LegalParagraph>
-          <LegalParagraph>__CONTACT__</LegalParagraph>
+          <LegalParagraph>
+            <a
+              href="https://forms.gle/qVJEoktwXiSjGuZK7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-accent underline"
+            >
+              お問い合わせフォーム
+            </a>
+          </LegalParagraph>
         </section>
       </Container>
     </LegalPageLayout>

@@ -154,7 +154,16 @@ export default function PrivacyPage() {
           <LegalParagraph>
             個人情報の確認・修正・削除、またはAIインタビュー機能の回答公開の停止等のご相談は、下記までご連絡ください。
           </LegalParagraph>
-          <LegalParagraph>__CONTACT__</LegalParagraph>
+          <LegalParagraph>
+            <a
+              href="https://forms.gle/qVJEoktwXiSjGuZK7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-accent underline"
+            >
+              お問い合わせフォーム
+            </a>
+          </LegalParagraph>
         </section>
       </Container>
     </LegalPageLayout>
