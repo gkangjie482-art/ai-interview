@@ -53,6 +53,13 @@ describe("InterviewChatInput", () => {
     expect(requestSubmit).not.toHaveBeenCalled();
   });
 
+  it("送信のキーボード操作を案内する", () => {
+    renderInput();
+    expect(
+      screen.getByText(/Enter で送信（Enter は改行）/)
+    ).toBeInTheDocument();
+  });
+
   it("送信ボタンでも送信できる", () => {
     renderInput();
     const button = screen.getByRole("button", { name: "送信" });

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ChangeEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   PromptInput,
   PromptInputBody,
@@ -11,6 +11,7 @@ import {
   type PromptInputMessage,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
+import { getSubmitShortcutLabel } from "../utils/submit-shortcut-label";
 
 interface InterviewChatInputProps {
   input: string;
@@ -31,6 +32,15 @@ export function InterviewChatInput({
   error,
 }: InterviewChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // サーバー描画と一致させるため初期値は Ctrl とし、マウント後に端末に合わせる
+  const [shortcutLabel, setShortcutLabel] = useState("Ctrl+Enter");
+
+  useEffect(() => {
+    const platform =
+      (navigator as Navigator & { userAgentData?: { platform?: string } })
+        .userAgentData?.platform ?? navigator.platform;
+    setShortcutLabel(getSubmitShortcutLabel(platform));
+  }, []);
 
   useEffect(() => {
     if (!input && textareaRef.current) {
@@ -84,6 +94,11 @@ export function InterviewChatInput({
       {/* {showHint && <PromptInputHint />} */}
       <PromptInputHint>
         個人情報や機密情報は記入しないでください
+        {/* キーボード操作の案内はパソコン幅のみ（スマホでは送信ボタンを使う） */}
+        <span className="hidden md:inline">
+          {" ・ "}
+          {shortcutLabel} で送信（Enter は改行）
+        </span>
       </PromptInputHint>
     </>
   );
