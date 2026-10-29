@@ -83,8 +83,8 @@
 
   /* Stance semantic colors */
   --color-stance-for-bg: #ecfcf1;
-  --color-stance-for-badge-start: #e2f6f3;
-  --color-stance-for-badge-end: #eef6e2;
+  --color-stance-for-badge-start: #e8effc;
+  --color-stance-for-badge-end: #f0f4fc;
   --color-stance-against: #c9272a;
   --color-stance-against-light: #d23c3f;
   --color-stance-against-bg: #fff1f1;
@@ -104,27 +104,27 @@
 
   /* Progress */
   --color-mirai-progress-track: #d9d9d9;
-  --color-mirai-progress-fill: #a9e89d;
+  --color-mirai-progress-fill: #a9c4f2;
 
   /* Gradient endpoints */
-  --color-mirai-gradient-start: #64d8c6;
-  --color-mirai-gradient-end: #bcecd3;
+  --color-mirai-gradient-start: #8fb0ee;
+  --color-mirai-gradient-end: #d9e5fb;
 
   /* Team Mirai brand (party design system) */
-  --color-mirai-brand-teal: #30bca7;
-  --color-mirai-brand-teal-hover: #089781;
-  --color-mirai-brand-teal-deep: #17594f;
-  --color-mirai-brand-teal-ink: #0b4036;
-  --color-mirai-brand-mint: #e2f6f3;
+  --color-mirai-brand-teal: #4a7be0;
+  --color-mirai-brand-teal-hover: #2a58bd;
+  --color-mirai-brand-teal-deep: #1c3a7a;
+  --color-mirai-brand-teal-ink: #102655;
+  --color-mirai-brand-mint: #e8effc;
 
   /* Topic analysis */
-  --color-topic-info-bg: #e5f3f0;
+  --color-topic-info-bg: #e6edfa;
   --color-topic-chip-bg: #f1f1f1;
   --color-topic-count: #6b7775;
   --color-topic-label: #909090;
   --color-topic-affected: #c8642a;
   --color-topic-industry: #2563a8;
-  --color-topic-expert: #0f8472;
+  --color-topic-expert: #1f449a;
   --color-topic-citizen: #909090;
 
   /* 引用文の明朝体（Noto Serif JP） */
@@ -139,8 +139,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #2aa693;
-  --primary-accent: #0f8472;
+  --primary: #3563c9;
+  --primary-accent: #1f449a;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -262,7 +262,7 @@
   }
 
   .bg-mirai-light-gradient {
-    background-image: linear-gradient(to bottom, #e2f6f3, #eef6e2);
+    background-image: linear-gradient(to bottom, #e8effc, #f0f4fc);
   }
 
   .bg-mirai-white-fade {

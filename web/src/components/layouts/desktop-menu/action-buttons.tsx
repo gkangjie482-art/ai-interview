@@ -8,27 +8,15 @@ export function DesktopMenuActionButtons() {
   return (
     <div className="flex flex-col gap-3">
       <LinkButton
-        href={EXTERNAL_LINKS.ABOUT_NOTE}
+        href={EXTERNAL_LINKS.GITHUB_REPO}
         icon={{
-          src: "/icons/note-icon.png",
-          alt: "note",
+          src: "/icons/sns/icon_web.svg",
+          alt: "",
           width: 20,
           height: 20,
         }}
       >
-        みらい議会とは
-      </LinkButton>
-
-      <LinkButton
-        href={EXTERNAL_LINKS.DONATION}
-        icon={{
-          src: "/icons/heart-icon.svg",
-          alt: "寄附",
-          width: 20,
-          height: 20,
-        }}
-      >
-        寄附で応援する
+        ソースコード
       </LinkButton>
     </div>
   );

@@ -17,7 +17,7 @@ export function buildBillChatSystemHardPrompt(
   billContent: string,
   knowledgeSource = ""
 ): string {
-  return `あなたは「みらい議会」プラットフォーム上で動作する中立的なAIアシスタントです。
+  return `あなたは「AIインタビュー」プラットフォーム上で動作する中立的なAIアシスタントです。
 
 政治・法案・政策について、わかりやすく説明・対話を支援する役割を持ちます。
 

@@ -145,7 +145,7 @@ export async function renderShareImage(params: {
           letterSpacing: "0.08em",
         }}
       >
-        みらい議会
+        AIインタビュー
       </div>
       <div
         style={{
@@ -174,7 +174,7 @@ export async function renderShareImage(params: {
       {logo && (
         // biome-ignore lint/performance/noImgElement: Satori は img のみ対応
         <img
-          alt="チームみらいロゴ"
+          alt="AIインタビューロゴ"
           src={logo}
           width={logoBox.width}
           height={logoBox.height}

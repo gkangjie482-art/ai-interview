@@ -11,7 +11,7 @@ export default function LoginPage() {
             管理者ログイン
           </CardTitle>
           <p className="text-sm text-muted-foreground text-center">
-            みらい議会 Admin
+            AIインタビュー Admin
           </p>
         </CardHeader>
         <CardContent>
@@ -21,7 +21,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
-              © 2025 チームみらい. All rights reserved.
+              Based on みらい議会 (AGPL-3.0)
             </p>
           </div>
         </CardContent>

@@ -38,7 +38,7 @@ function findBillNameElement(
   const element = node as ReactElement<StyledElementProps>;
   if (
     element.props.children === text &&
-    element.props.style?.color === "#0f8472"
+    element.props.style?.color === "#1f449a"
   ) {
     return element;
   }

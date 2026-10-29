@@ -18,7 +18,7 @@ export function About() {
             />
           </h2>
           <p className="text-sm font-bold text-primary-accent">
-            みらい議会とは
+            AIインタビューとは
           </p>
         </div>
 
@@ -26,26 +26,26 @@ export function About() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <h3 className="text-2xl font-bold leading-[43.2px]">
-              国会での議論を
+              あなたの声を
               <br />
-              できる限りわかりやすく
+              AIがていねいに聞き取ります
             </h3>
             <p className="text-[15px] leading-[28px] text-black">
-              みらい議会は、国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォームです。国民の意見を政治に届けることを目指して、継続的にアップデートしていきます。
+              AIインタビューは、法案やテーマについてわかりやすく解説し、AIとの対話を通じてあなたの意見をお聞きするサービスです。オープンソースの「みらい議会」をもとに個人が運営しています。これは政党チームみらいが運営しているものではありません。
             </p>
           </div>
 
-          {/* もっと詳しく知るボタン */}
+          {/* ソースコードへのリンク（AGPL-3.0） */}
           <LinkButton
-            href={EXTERNAL_LINKS.ABOUT_NOTE}
+            href={EXTERNAL_LINKS.GITHUB_REPO}
             icon={{
-              src: "/icons/note-icon.png",
-              alt: "note",
+              src: "/icons/sns/icon_web.svg",
+              alt: "",
               width: 25,
               height: 25,
             }}
           >
-            みらい議会とは
+            ソースコードを見る
           </LinkButton>
         </div>
       </div>

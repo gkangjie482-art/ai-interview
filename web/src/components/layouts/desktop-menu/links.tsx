@@ -11,11 +11,6 @@ type FooterLinkItem = {
 
 const links: FooterLinkItem[] = [
   {
-    label: "チームみらいについて",
-    href: EXTERNAL_LINKS.TEAM_MIRAI_ABOUT,
-    external: true,
-  },
-  {
     label: "利用規約",
     href: routes.terms(),
     external: false,
@@ -26,13 +21,8 @@ const links: FooterLinkItem[] = [
     external: false,
   },
   {
-    label: "よくあるご質問",
-    href: EXTERNAL_LINKS.FAQ,
-    external: true,
-  },
-  {
-    label: "自主制作ガイドライン",
-    href: EXTERNAL_LINKS.FORK_GUIDELINES_NOTE,
+    label: "本家「みらい議会」",
+    href: EXTERNAL_LINKS.UPSTREAM_SERVICE,
     external: true,
   },
 ];
@@ -63,7 +53,7 @@ export function DesktopMenuLinks() {
           lineHeight: "1.48em",
         }}
       >
-        © 2025 Team Mirai
+        これは政党チームみらいが運営しているものではありません
       </p>
     </div>
   );

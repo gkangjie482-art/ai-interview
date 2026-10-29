@@ -40,13 +40,13 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
             >
               <Image
                 src="/img/logo.svg"
-                alt="みらい議会"
+                alt="AIインタビュー"
                 width={42}
                 height={36}
               />
               <Image
                 src="/img/service-logo.svg"
-                alt="みらい議会"
+                alt="AIインタビュー"
                 width={115}
                 height={21}
               />

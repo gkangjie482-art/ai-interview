@@ -17,7 +17,7 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
           これから掲載される法案
         </h2>
         <p className="text-xs text-mirai-text-secondary">
-          みらい議会は、順次更新されていきます
+          AIインタビューは、順次更新されていきます
         </p>
       </div>
 

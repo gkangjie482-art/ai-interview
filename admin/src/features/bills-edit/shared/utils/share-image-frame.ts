@@ -23,14 +23,14 @@ export const SHARE_IMAGE_LOGO = {
   height: 241,
 } as const;
 
-const GRADIENT_FROM = "#64D8C6";
-const GRADIENT_TO = "#BCECD3";
+const GRADIENT_FROM = "#8FB0EE";
+const GRADIENT_TO = "#D9E5FB";
 
 function gradient(id: string, x1: number, y1: number, x2: number, y2: number) {
   return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${GRADIENT_FROM}"/><stop offset="1" stop-color="${GRADIENT_TO}"/></linearGradient>`;
 }
 
-/** 枠線と「みらい議会」タブの背景を描く SVG。文字は Satori 側で重ねる */
+/** 枠線と「AIインタビュー」タブの背景を描く SVG。文字は Satori 側で重ねる */
 export function buildShareImageFrameSvg(): string {
   const f = SHARE_IMAGE_FRAME;
   const t = SHARE_IMAGE_TAB;
