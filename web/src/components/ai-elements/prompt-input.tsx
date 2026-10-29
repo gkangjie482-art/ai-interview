@@ -463,6 +463,12 @@ export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
    * Default: false
    */
   submitOnEnter?: boolean;
+  /**
+   * If true, Ctrl+Enter (⌘+Enter on Mac) submits the form,
+   * regardless of submitOnEnter.
+   * Default: false
+   */
+  submitOnModEnter?: boolean;
 };
 
 // Safari (WebKit) は IME 変換確定の Enter で compositionend 直後に
@@ -478,6 +484,7 @@ export const PromptInputTextarea = ({
   className,
   placeholder = "What would you like to know?",
   submitOnEnter = false,
+  submitOnModEnter = false,
   ...props
 }: PromptInputTextareaProps) => {
   const compositionEndAtRef = useRef<number>(0);
@@ -496,6 +503,13 @@ export const PromptInputTextarea = ({
       }
 
       if (Date.now() - compositionEndAtRef.current < COMPOSITION_END_GUARD_MS) {
+        return;
+      }
+
+      if (submitOnModEnter && (e.ctrlKey || e.metaKey)) {
+        // Ctrl+Enter / ⌘+Enter submits
+        e.preventDefault();
+        e.currentTarget.form?.requestSubmit();
         return;
       }
 

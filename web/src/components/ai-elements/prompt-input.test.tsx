@@ -215,6 +215,24 @@ describe("PromptInputTextarea キーボードショートカット", () => {
     expect(requestSubmitSpy).not.toHaveBeenCalled();
   });
 
+  it("submitOnModEnter が未指定なら Ctrl+Enter でも送信されない", () => {
+    render(
+      <PromptInput onSubmit={vi.fn()}>
+        <PromptInputBody>
+          <PromptInputTextarea />
+        </PromptInputBody>
+      </PromptInput>
+    );
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    const form = textarea.closest("form") as HTMLFormElement;
+    const requestSubmitSpy = vi.fn();
+    form.requestSubmit = requestSubmitSpy;
+
+    fireEvent.keyDown(textarea, { key: "Enter", code: "Enter", ctrlKey: true });
+
+    expect(requestSubmitSpy).not.toHaveBeenCalled();
+  });
+
   it("submitOnEnter=false（デフォルト）: Enterキーで送信されない", () => {
     const onSubmit = vi.fn();
     render(

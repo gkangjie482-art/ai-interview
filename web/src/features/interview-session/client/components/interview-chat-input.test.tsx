@@ -30,7 +30,30 @@ describe("InterviewChatInput", () => {
     expect(requestSubmit).not.toHaveBeenCalled();
   });
 
-  it("送信は送信ボタンで行う", () => {
+  it("Ctrl+Enter で送信する", () => {
+    const { textarea, requestSubmit } = renderInput();
+    fireEvent.keyDown(textarea, { key: "Enter", code: "Enter", ctrlKey: true });
+    expect(requestSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it("⌘+Enter（Mac）で送信する", () => {
+    const { textarea, requestSubmit } = renderInput();
+    fireEvent.keyDown(textarea, { key: "Enter", code: "Enter", metaKey: true });
+    expect(requestSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it("日本語入力の変換中の Ctrl+Enter では送信しない", () => {
+    const { textarea, requestSubmit } = renderInput();
+    fireEvent.keyDown(textarea, {
+      key: "Enter",
+      code: "Enter",
+      ctrlKey: true,
+      isComposing: true,
+    });
+    expect(requestSubmit).not.toHaveBeenCalled();
+  });
+
+  it("送信ボタンでも送信できる", () => {
     renderInput();
     const button = screen.getByRole("button", { name: "送信" });
     expect(button).toHaveAttribute("type", "submit");
