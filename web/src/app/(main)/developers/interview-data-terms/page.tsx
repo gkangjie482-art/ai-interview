@@ -28,7 +28,7 @@ export default function InterviewDataTermsPage() {
         </LegalParagraph>
 
         <LegalParagraph>
-          本規約は、__OPERATOR__（以下「運営者」といいます。）が運営する「AIインタビュー」のインタビュー機能（以下「AIインタビュー機能」といいます。）を通じて取得した回答内容に基づき、運営者がオープンデータとして公開するデータセット（以下「本データ」といいます。）を、第三者（以下「利用者」といいます。）が利用するにあたっての条件を定めるものです。利用者は、本データをダウンロードまたは利用することにより、本規約に同意したものとみなされます。
+          本規約は、コッセ（以下「運営者」といいます。）が運営する「AIインタビュー」のインタビュー機能（以下「AIインタビュー機能」といいます。）を通じて取得した回答内容に基づき、運営者がオープンデータとして公開するデータセット（以下「本データ」といいます。）を、第三者（以下「利用者」といいます。）が利用するにあたっての条件を定めるものです。利用者は、本データをダウンロードまたは利用することにより、本規約に同意したものとみなされます。
         </LegalParagraph>
 
         <section className="space-y-4">
@@ -89,9 +89,9 @@ export default function InterviewDataTermsPage() {
           </LegalParagraph>
           <LegalList
             items={[
-              "データ出典：「AIインタビュー（__OPERATOR__）」",
-              "データ提供元URL：__SITE_URL__/",
-              "本規約のURL：__SITE_URL__/developers/interview-data-terms",
+              "データ出典：「AIインタビュー（コッセ）」",
+              "データ提供元URL：https://ai-interview-web-kappa.vercel.app/",
+              "本規約のURL：https://ai-interview-web-kappa.vercel.app/developers/interview-data-terms",
               {
                 id: "license",
                 content: (

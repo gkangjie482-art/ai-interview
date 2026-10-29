@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       className="bg-transparent pt-24 md:pt-12"
       title="プライバシーポリシー"
       enLabel="Privacy Policy"
-      description="AIインタビューの運営者である__OPERATOR__（以下「運営者」といいます）における個人情報の取り扱いについてご説明します。"
+      description="AIインタビューの運営者であるコッセ（以下「運営者」といいます）における個人情報の取り扱いについてご説明します。"
     >
       <Container className="space-y-8">
         <p className="text-sm text-mirai-text-muted">
