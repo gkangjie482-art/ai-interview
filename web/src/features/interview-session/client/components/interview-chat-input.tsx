@@ -11,7 +11,6 @@ import {
   type PromptInputMessage,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import { useIsDesktop } from "@/hooks/use-is-desktop";
 
 interface InterviewChatInputProps {
   input: string;
@@ -32,7 +31,6 @@ export function InterviewChatInput({
   error,
 }: InterviewChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isDesktop = useIsDesktop();
 
   useEffect(() => {
     if (!input && textareaRef.current) {
@@ -62,7 +60,8 @@ export function InterviewChatInput({
             value={input}
             placeholder={placeholder}
             rows={1}
-            submitOnEnter={isDesktop}
+            // Enter は改行（日本語入力の確定で誤送信しないよう、送信はボタンのみ）
+            submitOnEnter={false}
             className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-mirai-text-placeholder placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
           />
         </PromptInputBody>
