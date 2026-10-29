@@ -10,12 +10,12 @@ import {
 
 async function createTestInterviewConfig(billId: string) {
   const { data, error } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: billId,
+    .from("interviews")
+    .update({
       status: "public",
       name: `テスト設定 ${Date.now()}`,
     })
+    .eq("id", billId)
     .select()
     .single();
   if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -26,7 +26,7 @@ async function createTestSession(configId: string, userId: string) {
   const { data, error } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       user_id: userId,
       started_at: new Date().toISOString(),
     })
@@ -126,7 +126,7 @@ describe("count_bulk_publish_targets / bulk_publish_reports", () => {
     const { data, error } = await adminClient.rpc(
       "count_bulk_publish_targets",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_max_moderation_score: 29,
         p_min_content_richness: 50,
       }
@@ -160,7 +160,7 @@ describe("count_bulk_publish_targets / bulk_publish_reports", () => {
     const { data, error } = await adminClient.rpc(
       "count_bulk_publish_targets",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_max_moderation_score: 29,
         p_min_content_richness: 50,
       }
@@ -198,7 +198,7 @@ describe("count_bulk_publish_targets / bulk_publish_reports", () => {
     const { data, error } = await adminClient.rpc(
       "count_bulk_publish_targets",
       {
-        p_config_id: config1.id,
+        p_interview_id: config1.id,
         p_max_moderation_score: 29,
         p_min_content_richness: 50,
       }
@@ -240,7 +240,7 @@ describe("count_bulk_publish_targets / bulk_publish_reports", () => {
     });
 
     const { data, error } = await adminClient.rpc("bulk_publish_reports", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
       p_max_moderation_score: 29,
       p_min_content_richness: 50,
     });
@@ -294,7 +294,7 @@ describe("count_bulk_publish_targets / bulk_publish_reports", () => {
     });
 
     const params = {
-      p_config_id: config.id,
+      p_interview_id: config.id,
       p_max_moderation_score: 29,
       p_min_content_richness: 50,
     };

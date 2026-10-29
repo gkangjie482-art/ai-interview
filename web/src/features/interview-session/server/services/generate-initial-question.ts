@@ -94,7 +94,7 @@ export async function generateInitialQuestion({
         functionId: "interview-initial-question",
         metadata: {
           sessionId,
-          billId,
+          interviewId: billId,
         },
       },
     });
@@ -112,7 +112,7 @@ export async function generateInitialQuestion({
         occurredAt,
         metadata: {
           pageType: "interview",
-          billId,
+          interviewId: billId,
           finishReason: result.finishReason ?? null,
           stepCount: 0,
         },

@@ -19,7 +19,6 @@
     "@hookform/resolvers": "^5.2.1",
     "@mirai-gikai/shared": "workspace:*",
     "@mirai-gikai/supabase": "workspace:*",
-    "@mirai-gikai/topic-analysis-core": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@opentelemetry/sdk-node": "^0.217.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",

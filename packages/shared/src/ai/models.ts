@@ -43,8 +43,8 @@ export function isKnownModel(model: string): model is AiModel {
   return KNOWN_MODELS.has(model);
 }
 
-/** インタビューチャットのデフォルトモデル */
-export const DEFAULT_INTERVIEW_CHAT_MODEL = AI_MODELS.claude_haiku_4_5;
+/** インタビューチャットのデフォルトモデル（Vercel AI Gateway の無料枠で使えるもの） */
+export const DEFAULT_INTERVIEW_CHAT_MODEL = AI_MODELS.gpt5_mini;
 /** モデレーション評価のデフォルトモデル */
 export const DEFAULT_MODERATION_MODEL = AI_MODELS.gpt5_2;
 /** コンテンツ充実度評価のデフォルトモデル */

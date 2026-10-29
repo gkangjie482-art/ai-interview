@@ -31,7 +31,7 @@ async function insertUsageEvent(params: {
     total_tokens: params.totalTokens ?? 100,
     cost_usd: params.costUsd ?? 0.01,
     occurred_at: params.occurredAt,
-    metadata: params.billId ? { billId: params.billId } : null,
+    metadata: params.billId ? { interviewId: params.billId } : null,
   });
   if (error) throw new Error(`chat_usage_events 作成失敗: ${error.message}`);
 }
@@ -136,7 +136,7 @@ describe("get_chat_usage_metrics() 関数", () => {
     expect(row?.event_count).toBe(1);
   });
 
-  it("billIdフィルタは metadata.billId が一致するイベントのみ返す", async () => {
+  it("interviewIdフィルタは metadata.interviewId が一致するイベントのみ返す", async () => {
     const billId = crypto.randomUUID();
     await insertUsageEvent({
       userId: user1.id,
@@ -159,7 +159,7 @@ describe("get_chat_usage_metrics() 関数", () => {
     const { data, error } = await adminClient.rpc("get_chat_usage_metrics", {
       p_from: WINDOW_FROM,
       p_to: WINDOW_TO,
-      p_bill_id: billId,
+      p_interview_id: billId,
     });
 
     expect(error).toBeNull();

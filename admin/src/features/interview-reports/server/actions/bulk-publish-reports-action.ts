@@ -32,7 +32,7 @@ export async function bulkPublishReportsAction(
     const supabase = createAdminClient();
 
     const { data, error } = await supabase.rpc("bulk_publish_reports", {
-      p_config_id: params.configId,
+      p_interview_id: params.configId,
       p_max_moderation_score: params.maxModerationScore,
       p_min_content_richness: params.minContentRichness,
     });
@@ -68,7 +68,7 @@ export async function countBulkPublishTargetsAction(
     const supabase = createAdminClient();
 
     const { data, error } = await supabase.rpc("count_bulk_publish_targets", {
-      p_config_id: params.configId,
+      p_interview_id: params.configId,
       p_max_moderation_score: params.maxModerationScore,
       p_min_content_richness: params.minContentRichness,
     });

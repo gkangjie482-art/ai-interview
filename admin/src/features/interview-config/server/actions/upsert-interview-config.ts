@@ -1,7 +1,5 @@
 "use server";
 
-import { parsePromptOverridesByMode } from "@mirai-gikai/shared/interview-prompts/sections";
-import type { InterviewMode } from "@mirai-gikai/shared/interview-prompts/types";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
 import {
   invalidateWebCache,
@@ -13,104 +11,30 @@ import {
   interviewConfigSchema,
 } from "../../shared/types";
 import { normalizePromptOverrides } from "../../shared/utils/normalize-prompt-overrides";
-import { prepareQuestionsForDuplication } from "../../shared/utils/prepare-questions-for-duplication";
-import {
-  closeOtherPublicConfigs,
-  createInterviewConfigRecord,
-  findInterviewConfigBillId,
-  findInterviewConfigById,
-  findInterviewQuestionsByConfigId,
-  softDeleteInterviewConfigRecord,
-  unpublishReportsByConfigId,
-  updateInterviewConfigRecord,
-} from "../repositories/interview-config-repository";
-import { createInterviewConfigWithQuestions } from "../services/create-interview-config-with-questions";
+import { updateInterviewConfigRecord } from "../repositories/interview-config-repository";
 
 export type InterviewConfigResult =
   | { success: true; data: { id: string } }
   | { success: false; error: string };
 
-export type DuplicateInterviewConfigResult =
-  | { success: true; data: { id: string; billId: string } }
-  | { success: false; error: string };
-
 /**
- * 新しいインタビュー設定を作成する
- */
-export async function createInterviewConfig(
-  billId: string,
-  input: InterviewConfigInput
-): Promise<InterviewConfigResult> {
-  try {
-    await requireAdmin();
-
-    // バリデーション
-    const validatedData = interviewConfigSchema.parse(input);
-
-    // 公開設定の場合、既存の公開設定を非公開にする
-    if (validatedData.status === "public") {
-      await closeOtherPublicConfigs(billId);
-    }
-
-    // 新規作成
-    const data = await createInterviewConfigRecord({
-      bill_id: billId,
-      name: validatedData.name,
-      status: validatedData.status,
-      mode: validatedData.mode,
-      themes: validatedData.themes || null,
-      chat_model: validatedData.chat_model || null,
-      estimated_duration: validatedData.estimated_duration ?? null,
-      prompt_overrides: normalizePromptOverrides(
-        validatedData.prompt_overrides
-      ),
-    });
-
-    // web側のキャッシュを無効化
-    await invalidateWebCache([WEB_CACHE_TAGS.INTERVIEW_CONFIGS]);
-
-    return { success: true, data: { id: data.id } };
-  } catch (error) {
-    console.error("Create interview config error:", error);
-    return {
-      success: false,
-      error: getErrorMessage(
-        error,
-        "インタビュー設定の作成中にエラーが発生しました"
-      ),
-    };
-  }
-}
-
-/**
- * 既存のインタビュー設定を更新する
+ * インタビューのAI設定（モード・モデル・所要時間・質問テーマ・プロンプト上書き）を更新する
  */
 export async function updateInterviewConfig(
-  configId: string,
+  interviewId: string,
   input: InterviewConfigInput
 ): Promise<InterviewConfigResult> {
   try {
     await requireAdmin();
 
-    // バリデーション
     const validatedData = interviewConfigSchema.parse(input);
 
-    // 公開設定の場合、他の公開設定を非公開にする
-    if (validatedData.status === "public") {
-      // まず現在の設定のbill_idを取得
-      const currentConfig = await findInterviewConfigBillId(configId);
-      await closeOtherPublicConfigs(currentConfig.bill_id, configId);
-    }
-
-    // 更新
     /*
       prompt_overrides を渡さない呼び出し元があるため、未指定なら列に触らない。
       渡した場合だけ更新する。ここを常に上書きにすると、テーマ確定など
       プロンプトと無関係な更新で編集内容が黙って消える。
     */
-    const data = await updateInterviewConfigRecord(configId, {
-      name: validatedData.name,
-      status: validatedData.status,
+    const data = await updateInterviewConfigRecord(interviewId, {
       mode: validatedData.mode,
       themes: validatedData.themes || null,
       chat_model: validatedData.chat_model || null,
@@ -125,8 +49,7 @@ export async function updateInterviewConfig(
       updated_at: new Date().toISOString(),
     });
 
-    // web側のキャッシュを無効化
-    await invalidateWebCache([WEB_CACHE_TAGS.INTERVIEW_CONFIGS]);
+    await invalidateWebCache([WEB_CACHE_TAGS.INTERVIEWS]);
 
     return { success: true, data: { id: data.id } };
   } catch (error) {
@@ -136,113 +59,6 @@ export async function updateInterviewConfig(
       error: getErrorMessage(
         error,
         "インタビュー設定の更新中にエラーが発生しました"
-      ),
-    };
-  }
-}
-
-/**
- * インタビュー設定を複製する（質問も含めてコピー）
- *
- * `options.targetBillId` を渡すと別の法案にコピーする。
- * 省略時は同じ法案内で複製する（従来動作）。
- * いずれの場合も新しい設定は status="closed" で作成する。
- */
-export async function duplicateInterviewConfig(
-  configId: string,
-  options?: { targetBillId?: string }
-): Promise<DuplicateInterviewConfigResult> {
-  try {
-    await requireAdmin();
-
-    // 元の設定を取得
-    const originalConfig = await findInterviewConfigById(configId);
-
-    if (!originalConfig) {
-      return {
-        success: false,
-        error: "複製元のインタビュー設定が見つかりません",
-      };
-    }
-
-    // 元の質問を取得
-    const originalQuestions = await findInterviewQuestionsByConfigId(configId);
-
-    const targetBillId = options?.targetBillId ?? originalConfig.bill_id;
-
-    // 新しい設定を質問ごと作成（ステータスは非公開で複製）
-    let newConfig: { id: string };
-    try {
-      newConfig = await createInterviewConfigWithQuestions(
-        {
-          bill_id: targetBillId,
-          name: `${originalConfig.name}（コピー）`,
-          status: "closed" as const,
-          mode: originalConfig.mode as InterviewMode,
-          themes: originalConfig.themes,
-          chat_model: originalConfig.chat_model,
-          estimated_duration: originalConfig.estimated_duration,
-          prompt_overrides: parsePromptOverridesByMode(
-            originalConfig.prompt_overrides
-          ),
-        },
-        (newConfigId) =>
-          prepareQuestionsForDuplication(originalQuestions, newConfigId)
-      );
-    } catch (error) {
-      return {
-        success: false,
-        error: `インタビュー設定の複製に失敗しました: ${getErrorMessage(error, "unknown error")}`,
-      };
-    }
-
-    // web側のキャッシュを無効化
-    await invalidateWebCache([WEB_CACHE_TAGS.INTERVIEW_CONFIGS]);
-
-    return { success: true, data: { id: newConfig.id, billId: targetBillId } };
-  } catch (error) {
-    console.error("Duplicate interview config error:", error);
-    return {
-      success: false,
-      error: getErrorMessage(
-        error,
-        "インタビュー設定の複製中にエラーが発生しました"
-      ),
-    };
-  }
-}
-
-/**
- * インタビュー設定を削除する
- */
-export async function deleteInterviewConfig(
-  configId: string
-): Promise<InterviewConfigResult> {
-  try {
-    await requireAdmin();
-
-    // 先に配下レポートを公開停止してから設定を論理削除する。
-    // この順序なら、途中で失敗しても「設定は一覧に残る／レポートも公開のまま」
-    // の整合した状態になり、再実行で安全にやり直せる（いずれも冪等）。
-    await unpublishReportsByConfigId(configId);
-    await softDeleteInterviewConfigRecord(configId);
-
-    // web側のキャッシュを無効化
-    // - INTERVIEW_CONFIGS: 公開設定の取得
-    // - BILLS: 法案一覧の「AIインタビュー受付中」バッジ・法案ページの公開レポート件数
-    await invalidateWebCache([
-      WEB_CACHE_TAGS.BILLS,
-      WEB_CACHE_TAGS.INTERVIEW_CONFIGS,
-    ]);
-
-    return { success: true, data: { id: configId } };
-  } catch (error) {
-    console.error("Delete interview config error:", error);
-    return {
-      success: false,
-      error: getErrorMessage(
-        error,
-        "インタビュー設定の削除中にエラーが発生しました"
       ),
     };
   }

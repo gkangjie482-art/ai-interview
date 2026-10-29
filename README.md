@@ -1,4 +1,12 @@
-# みらい議会
+# AIインタビュー
+
+AIの聞き手がテーマごとに一人ひとりの話をうかがい、集まった声を公開するサービスです。政党チームみらいがオープンソースで公開している「みらい議会」（AGPL-3.0）をもとに、議会向けの機能を除いてインタビュー専用に作り直したものです。**これは政党チームみらいが運営しているものではありません。**
+
+- `web/` 市民向け画面（インタビュー一覧・紹介ページ・チャット・公開された会話・回答履歴）
+- `admin/` 管理画面（インタビューの作成・AI設定と質問・回答の確認と公開）
+- `supabase/migrations/` DB定義（baseline 1本）
+
+<!-- 以下は fork 元のバッジ -->
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/team-mirai-volunteer/mirai-gikai)
 [![codecov](https://codecov.io/gh/team-mirai/mirai-gikai/branch/develop/graph/badge.svg)](https://codecov.io/gh/team-mirai/mirai-gikai)

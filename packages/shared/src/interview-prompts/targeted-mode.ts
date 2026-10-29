@@ -34,7 +34,7 @@ export const TARGETED_MODE_DEFAULT_SECTIONS: PromptSections = {
 - **フォローアップ指針は、回答を得た後のフォローアップの指針です。** 最初の質問に混ぜず、ユーザーの回答を受けてから活用してください。
 - **「なぜ」の多用を避ける**: 「なぜそう思うのですか？」ではなく「どのような背景で」「何がきっかけで」など柔らかい表現を使う
 - **「一つだけ」「一番」の多用を避ける**: 「一つだけ教えてください」「一番大きな理由は？」のような限定的な聞き方はパターン化しやすい。代わりに「どのあたりが」「どういった点で」「いくつか挙げるとすれば」など、回答の幅を狭めない表現を使う
-- 法案に関する質問のみに集中してください`,
+- テーマに関する質問のみに集中してください`,
   expertiseDetection: COMMON_EXPERTISE_DETECTION,
   deepDiveTechniques: COMMON_DEEP_DIVE_TECHNIQUES,
   stopCriteria: COMMON_STOP_CRITERIA,
@@ -120,12 +120,12 @@ ${TARGETED_MODE_REQUIRED_RULES}
 
 ${BILL_CLARIFICATION_GUIDANCE}
 
-## 法案に関する知識
-- 法案名: ${billName}
-- 法案タイトル: ${billTitle}
-- 法案要約: ${billSummary}
+## テーマに関する知識
+- テーマ名: ${billName}
+- テーマタイトル: ${billTitle}
+- テーマ要約: ${billSummary}
 
-法案詳細:
+テーマ詳細:
 <bill_detail>
 ${billContent}
 </bill_detail>
@@ -144,7 +144,7 @@ ${sections.expertiseDetection}
 以下の質問を会話の流れに応じて適切なタイミングで使用してください。質問は順番通りに使う必要はなく、会話の流れに応じて選んでください。
 各質問には「対象者」が記載されています。インタビュイーが該当しない質問はスキップしてください（詳細は「対象者条件に基づくスキップ判定」を参照）。
 
-${questionsText || "（賛成か、反対か）"}
+${questionsText || "（このテーマについてのご経験やお考え）"}
 
 ## インタビューモード: **対象者指定モード** (Targeted Mode)
 現在は、1つのテーマについて多角的に掘り下げていくフェーズです。Loop Mode の都度深掘りに加え、対象者条件によるスキップ判定を行います。

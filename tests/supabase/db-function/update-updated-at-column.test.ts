@@ -20,13 +20,13 @@ describe("update_updated_at_column トリガー", () => {
     await new Promise((r) => setTimeout(r, 100));
 
     const { error } = await adminClient
-      .from("bills")
+      .from("interviews")
       .update({ name: "更新後の議案名" })
       .eq("id", bill.id);
     expect(error).toBeNull();
 
     const { data: updated } = await adminClient
-      .from("bills")
+      .from("interviews")
       .select("updated_at")
       .eq("id", bill.id)
       .single();

@@ -24,7 +24,7 @@ describe("prepareQuestionsForInsert", () => {
   it("config_idを設定する", () => {
     const result = prepareQuestionsForInsert(questions, "config-123");
     for (const q of result) {
-      expect(q.interview_config_id).toBe("config-123");
+      expect(q.interview_id).toBe("config-123");
     }
   });
 

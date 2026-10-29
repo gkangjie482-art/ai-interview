@@ -1,8 +1,7 @@
 import "server-only";
 
 import { convertToModelMessages, Output, streamText } from "ai";
-import { getBillById } from "@/features/bills-edit/server/loaders/get-bill-by-id";
-import { getBillContents } from "@/features/bills-edit/server/loaders/get-bill-contents";
+import { getInterviewById } from "@/features/interviews/server/loaders/get-interviews";
 import { AI_MODELS } from "@/lib/ai/models";
 import { injectJsonFields } from "@/lib/stream/inject-json-fields";
 import {
@@ -36,27 +35,19 @@ export async function handleConfigGeneration({
   existingQuestions,
   confirmedQuestions,
 }: HandleConfigGenerationParams) {
-  const [bill, billContents] = await Promise.all([
-    getBillById(billId),
-    getBillContents(billId),
-  ]);
+  const interview = await getInterviewById(billId);
 
-  if (!bill) {
-    throw new Error("Bill not found");
+  if (!interview) {
+    throw new Error("Interview not found");
   }
 
-  // ふつう（normal）の難易度コンテンツを使用
-  const normalContent = billContents.find(
-    (c) => c.difficulty_level === "normal"
-  );
-
   const systemPrompt = buildConfigGenerationPrompt({
-    billName: bill.name,
-    billTitle: normalContent?.title || "",
-    billSummary: normalContent?.summary || "",
-    billContent: normalContent?.content || "",
+    billName: interview.name,
+    billTitle: interview.name,
+    billSummary: interview.summary || "",
+    billContent: interview.description || "",
     stage,
-    knowledgeSource: bill.knowledge_source ?? undefined,
+    knowledgeSource: interview.background ?? undefined,
     existingThemes,
     existingQuestions,
     confirmedQuestions,
@@ -64,9 +55,9 @@ export async function handleConfigGeneration({
 
   const initialUserMessage =
     stage === "default_questions"
-      ? "法案内容を分析して、topics（Q1の論点選択肢）とstance（Q2の立場選択肢）を生成してください。"
+      ? "テーマの内容を分析して、topics（Q1の論点選択肢）とstance（Q2の立場選択肢）を生成してください。"
       : stage === "theme_proposal"
-        ? "確定した質問と法案内容をもとに、テーマを提案してください。"
+        ? "確定した質問とテーマの内容をもとに、テーマを提案してください。"
         : "質問を提案・ブラッシュアップしてください。";
 
   const effectiveMessages =

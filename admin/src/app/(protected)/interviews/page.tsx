@@ -1,34 +1,18 @@
-import { redirect } from "next/navigation";
-import { getCurrentAdmin } from "@/features/auth/server/lib/auth-server";
-import { AllInterviewConfigList } from "@/features/interviews/server/components/all-interview-config-list";
-import {
-  getAllInterviewConfigs,
-  getSessionCountsForConfigs,
-} from "@/features/interviews/server/loaders/get-all-interview-configs";
-import { routes } from "@/lib/routes";
+import { InterviewList } from "@/features/interviews/server/components/interview-list";
 
-export default async function InterviewsPage() {
-  const currentAdmin = await getCurrentAdmin();
+export const dynamic = "force-dynamic";
 
-  if (!currentAdmin) {
-    redirect(routes.login());
-  }
-
-  const configs = await getAllInterviewConfigs();
-  const sessionCounts = await getSessionCountsForConfigs(
-    configs.map((config) => config.id)
-  );
-
+export default function InterviewsPage() {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-8">インタビュー管理</h1>
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">インタビュー管理</h1>
+        <p className="mt-1 text-gray-600">
+          インタビューの作成・公開・回答の確認ができます
+        </p>
+      </div>
 
-      <section className="rounded-lg border bg-white p-6">
-        <AllInterviewConfigList
-          configs={configs}
-          sessionCounts={sessionCounts}
-        />
-      </section>
+      <InterviewList />
     </div>
   );
 }

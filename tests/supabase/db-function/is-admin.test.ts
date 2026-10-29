@@ -42,10 +42,9 @@ describe("is_admin() 関数", () => {
     expect(data).toBe(false);
   });
 
-  it("anon クライアントでは false を返す", async () => {
+  it("anon クライアントからは呼べない（ストレージのポリシー用に authenticated のみ許可）", async () => {
     const client = getAnonClient();
-    const { data, error } = await client.rpc("is_admin");
-    expect(error).toBeNull();
-    expect(data).toBe(false);
+    const { error } = await client.rpc("is_admin");
+    expect(error?.code).toBe("42501");
   });
 });

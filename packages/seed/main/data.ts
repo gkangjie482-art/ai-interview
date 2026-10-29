@@ -1,763 +1,138 @@
 import type { Database } from "@mirai-gikai/supabase";
 
-type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
-type MiraiStanceInsert =
-  Database["public"]["Tables"]["mirai_stances"]["Insert"];
-type TagInsert = Database["public"]["Tables"]["tags"]["Insert"];
-type BillsTagsInsert = Database["public"]["Tables"]["bills_tags"]["Insert"];
-type DietSessionInsert =
-  Database["public"]["Tables"]["diet_sessions"]["Insert"];
-type InterviewConfigInsert =
-  Database["public"]["Tables"]["interview_configs"]["Insert"];
-type InterviewQuestionInsert =
-  Database["public"]["Tables"]["interview_questions"]["Insert"];
-type InterviewSessionInsert =
-  Database["public"]["Tables"]["interview_sessions"]["Insert"];
-type InterviewMessageInsert =
-  Database["public"]["Tables"]["interview_messages"]["Insert"];
-type InterviewReportInsert =
-  Database["public"]["Tables"]["interview_report"]["Insert"];
+type InterviewInsert = Database["public"]["Tables"]["interviews"]["Insert"];
+type QuestionInsert = Omit<
+  Database["public"]["Tables"]["interview_questions"]["Insert"],
+  "interview_id"
+>;
 
-// 国会会期データ
-export const dietSessions: DietSessionInsert[] = [
+/** ローカル開発用のサンプルインタビュー */
+export const sampleInterviews: Array<{
+  interview: InterviewInsert;
+  questions: QuestionInsert[];
+}> = [
   {
-    name: "第219回国会（臨時会）",
-    slug: "219-rinji",
-    shugiin_url:
-      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
-    start_date: "2025-10-21",
-    end_date: "2025-12-17",
-  },
-  {
-    name: "第218回国会（臨時会）",
-    slug: "218-rinji",
-    shugiin_url:
-      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
-    start_date: "2025-08-01",
-    end_date: "2025-08-05",
-  },
-];
-
-// タグデータ
-export const tags: TagInsert[] = [
-  {
-    label: "エネルギー・環境",
-    description: "エネルギー政策、環境保護、気候変動対策に関する法案",
-    featured_priority: 1,
-  },
-  {
-    label: "子育て・教育",
-    description: "子育て支援、教育政策、若者支援に関する法案",
-    featured_priority: 2,
-  },
-  {
-    label: "選挙・政治改革",
-    description: "選挙制度、政治改革、民主主義の強化に関する法案",
-    featured_priority: 3,
-  },
-];
-
-export const bills: BillInsert[] = [
-  {
-    name: "ガソリン税暫定税率廃止法案",
-    originating_house: "HR",
-    status: "in_originating_house",
-    status_note: "衆議院で審議中",
-    submitted_date: "2025-08-01T09:00:00+09:00",
-    publish_status: "published",
-    is_featured: true,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-  {
-    name: "こども家庭庁予算大幅増額法案",
-    originating_house: "HC",
-    status: "enacted",
-    status_note: "両院で可決、成立",
-    submitted_date: "2025-01-20T10:00:00+09:00",
-    publish_status: "published",
-    is_featured: true,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-  {
-    name: "18歳選挙権完全実施法案",
-    originating_house: "HR",
-    status: "rejected",
-    status_note: "衆議院で否決",
-    submitted_date: "2025-02-01T09:00:00+09:00",
-    publish_status: "published",
-    is_featured: false,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-  {
-    name: "学校給食無償化促進法案",
-    originating_house: "HC",
-    status: "enacted",
-    status_note: "両院で可決、4月から実施",
-    submitted_date: "2025-01-10T09:00:00+09:00",
-    publish_status: "published",
-    is_featured: false,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-  // 第218回国会用の追加法案（デザイン確認用）- ループで生成
-  ...Array.from({ length: 4 }, (_, i) => ({
-    name: `学校給食無償化促進法案（第${i + 2}号）`,
-    originating_house: (i % 2 === 0 ? "HR" : "HC") as "HR" | "HC",
-    status: (i % 2 === 0 ? "enacted" : "in_originating_house") as
-      | "enacted"
-      | "in_originating_house",
-    status_note: i % 2 === 0 ? "両院で可決、成立" : "参議院で審議中",
-    submitted_date: `2025-08-0${i + 1}T09:00:00+09:00`,
-    publish_status: "published" as const,
-    is_featured: false,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  })),
-  {
-    name: "船荷証券の電子化に関する法律案",
-    originating_house: "HR",
-    status: "in_originating_house",
-    status_note: "衆議院で審議中",
-    submitted_date: "2025-09-15T09:00:00+09:00",
-    publish_status: "published",
-    is_featured: false,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-  {
-    name: "中学生・高校生向けプログラミング教育必修化法案",
-    originating_house: "HR",
-    status: "rejected",
-    status_note: "衆議院本会議で否決",
-    submitted_date: "2024-11-15T10:00:00+09:00",
-    publish_status: "published",
-    is_featured: false,
-    thumbnail_url: "https://placehold.co/600x400.png",
-  },
-];
-
-// 議案とタグの関連付け
-// billsの順番: [ガソリン税, こども家庭庁, 18歳選挙権, 学校給食, プログラミング教育]
-// tagsの順番: [エネルギー・環境, 子育て・教育, 選挙・政治改革]
-export function createBillsTags(
-  insertedBills: { id: string; name: string }[],
-  insertedTags: { id: string; label: string }[]
-): Omit<BillsTagsInsert, "id" | "created_at">[] {
-  const billTagMap: { [billName: string]: string[] } = {
-    "ガソリン税暫定税率廃止法案": ["エネルギー・環境"],
-    "こども家庭庁予算大幅増額法案": ["子育て・教育"],
-    "18歳選挙権完全実施法案": ["選挙・政治改革"],
-    "学校給食無償化促進法案": ["子育て・教育"],
-    // 第218回国会用の追加法案（デザイン確認用）
-    ...Object.fromEntries(
-      Array.from({ length: 4 }, (_, i) => [
-        `学校給食無償化促進法案（第${i + 2}号）`,
-        ["子育て・教育"],
-      ])
-    ),
-    "船荷証券の電子化に関する法律案": ["エネルギー・環境"],
-    "中学生・高校生向けプログラミング教育必修化法案": ["子育て・教育"],
-  };
-
-  const billsTags: Omit<BillsTagsInsert, "id" | "created_at">[] = [];
-
-  for (const bill of insertedBills) {
-    const tagLabels = billTagMap[bill.name] || [];
-    for (const tagLabel of tagLabels) {
-      const tag = insertedTags.find((t) => t.label === tagLabel);
-      if (tag) {
-        billsTags.push({
-          bill_id: bill.id,
-          tag_id: tag.id,
-        });
-      }
-    }
-  }
-
-  return billsTags;
-}
-
-const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
-  {
-    // ガソリン税暫定税率廃止法案に対する見解
-    type: "for",
-    comment: `私たちは、家計の負担を軽くするこの法案に賛成します。
-
-特に車が必要な地方の人たちには大きなメリットがあります。ただし、環境問題や道路整備の予算についても同時に考える必要があります。
-
-電気自動車の普及促進など、環境に優しい対策もセットで進めるべきです。`,
-  },
-  {
-    // こども家庭庁予算大幅増額法案に対する見解
-    type: "for",
-    comment: `少子化対策は国の最重要課題の一つです。この法案による児童手当の増額と保育の無償化は、子育て世代の経済的負担を大幅に軽減します。
-
-特に第3子以降への手厚い支援は、出生率向上に効果的だと考えます。財源確保についても企業の子ども支援金など、社会全体で支える仕組みが評価できます。`,
-  },
-  {
-    // 18歳選挙権完全実施法案に対する見解
-    type: "for",
-    comment: `18歳選挙権が導入されても、若者の投票率が低いままでは意味がありません。
-
-この法案による主権者教育の充実と投票環境の改善は、民主主義の質を高める重要な取り組みです。デジタルネイティブ世代に合わせた情報提供の現代化も評価できます。`,
-  },
-  {
-    // 学校給食無償化促進法案に対する見解
-    type: "for",
-    comment: `学校給食の無償化は、子育て支援と教育の充実を同時に実現する重要な政策です。
-
-全ての子どもが質の高い食事を平等に受けられることは、健康格差の解消にもつながります。地産地消の推進により地域経済の活性化も期待できます。`,
-  },
-  {
-    // 船荷証券の電子化に関する法律案に対する見解
-    type: "conditional_for",
-    comment: `国際海運のデジタル化は避けられない潮流であり、電子船荷証券の法整備は重要です。
-
-ただし、中小フォワーダーや地方港湾事業者への技術支援・移行期間の確保が不十分であれば、実務上の混乱を招く恐れがあります。
-
-国際条約（MLETR）との整合性を保ちつつ、段階的な導入と十分なサポート体制の構築を条件に賛成します。`,
-    // 新フォーマット（旧フォーマットの comment より優先して表示される）
-    reason_summary: "移行支援の確保を条件に、海運のデジタル化を進めるため賛成します。",
-    reason_points: [
-      "国際海運のデジタル化は避けられない潮流であり、電子船荷証券の法整備は重要です",
-      "一方で、中小フォワーダーや地方港湾事業者への技術支援・移行期間が不十分だと、実務上の混乱を招く恐れがあります",
-      "国際条約（MLETR）との整合性を保ちつつ、段階的な導入と十分なサポート体制の構築を条件に賛成します",
-    ],
-    supplements: [
+    interview: {
+      slug: "childcare-2026",
+      name: "地域の子育て支援についてのインタビュー",
+      summary:
+        "保育園・学童・相談窓口など、地域の子育て支援で困っていることや、あったらいいと思う仕組みを伺います。",
+      description:
+        "子育て中の方、これから子育てをする方、子育てを支える立場の方のご経験やお考えを伺います。\n\n- 専門知識は必要ありません\n- 答えにくい質問は飛ばせます\n- 回答は匿名です",
+      background:
+        "自治体の子育て支援には、保育所・学童保育・一時預かり・子育て相談窓口などがある。待機児童、手続きの煩雑さ、情報の届きにくさが課題として挙げられることが多い。",
+      publish_status: "published",
+      published_at: new Date().toISOString(),
+      status: "public",
+      is_featured: true,
+      featured_order: 0,
+      themes: ["いま困っていること", "支援の使いやすさ", "あったらいい仕組み"],
+      mode: "loop",
+      estimated_duration: 10,
+    },
+    questions: [
       {
-        title: "今後の働きかけ",
-        body: `- 移行支援の拡充：中小事業者向けのシステム導入補助と相談窓口の設置を求めます
-- 段階的な導入：紙の船荷証券との併用期間を十分に確保することを求めます`,
+        question: "子育てに関わる中で、いま一番困っていることは何ですか？",
+        follow_up_guide: "具体的な場面（時間帯・場所・相手）を聞く",
+        quick_replies: ["預け先", "お金", "情報が少ない", "相談相手"],
+        question_order: 1,
       },
       {
-        title: "各議員の判断",
-        body: `| 議員 | 賛否 |
-| --- | --- |
-| 議員A | 賛成 |
-| 議員B | 賛成 |
-| 議員C | 反対 |`,
+        question:
+          "使ったことのある子育て支援で、使いにくかった点はありますか？",
+        follow_up_guide: "手続き・窓口・時間など、どこで困ったかを深掘りする",
+        quick_replies: ["手続きが大変", "時間が合わない", "使ったことがない"],
+        question_order: 2,
       },
-      // 本文が空の補足情報は公開サイトに表示されない
-      { title: "採決結果", body: "" },
+      {
+        question: "こんな仕組みがあったら助かる、というものはありますか？",
+        follow_up_guide: "なぜそれが必要か、理由を聞く",
+        quick_replies: null,
+        question_order: 3,
+      },
     ],
   },
-  // 第218回国会用の追加法案（デザイン確認用）- 同じ見解を4件追加
-  ...Array.from({ length: 4 }, () => ({
-    type: "for" as const,
-    comment: `学校給食の無償化は、子育て支援と教育の充実を同時に実現する重要な政策です。
-
-全ての子どもが質の高い食事を平等に受けられることは、健康格差の解消にもつながります。地産地消の推進により地域経済の活性化も期待できます。`,
-  })),
   {
-    // プログラミング教育必修化法案に対する見解
-    type: "against",
-    comment: `デジタル人材の育成は重要ですが、準備不足での拙速な必修化には反対です。
-
-教員の養成、設備の整備、カリキュラムの検討など、十分な準備期間が必要です。段階的な導入を検討し、質の高いプログラミング教育を実現すべきです。`,
-    // 新フォーマット（補足情報なし）
-    reason_summary: "拙速な必修化より、十分な準備期間の確保を優先すべきです。",
-    reason_points: [
-      "デジタル人材の育成が重要であることには異論ありません",
-      "しかし、教員の養成や設備の整備、カリキュラムの検討が追いついていません",
-      "段階的な導入で質の高いプログラミング教育を実現すべきと考え、本法律案には反対します",
+    interview: {
+      slug: "local-transport",
+      name: "地域の移動手段（バス・乗り合い）についてのインタビュー",
+      summary:
+        "通院・買い物・通学などの移動で困っていることと、地域の交通に期待することを伺います。",
+      description:
+        "ふだんの移動手段や、移動で困った経験について教えてください。車を運転する方・しない方、どちらのお話も歓迎です。",
+      background:
+        "地方部では路線バスの減便や廃止が進み、デマンド交通（予約制の乗り合い）やライドシェアの導入が検討されている。",
+      publish_status: "published",
+      published_at: new Date().toISOString(),
+      status: "public",
+      is_featured: false,
+      themes: ["ふだんの移動", "困った経験", "期待すること"],
+      mode: "loop",
+      estimated_duration: 8,
+    },
+    questions: [
+      {
+        question: "ふだん、どんな手段で移動することが多いですか？",
+        follow_up_guide: null,
+        quick_replies: ["自家用車", "バス・電車", "自転車・徒歩", "家族の送迎"],
+        question_order: 1,
+      },
+      {
+        question: "移動で困った経験があれば教えてください。",
+        follow_up_guide: "いつ・どこへの移動か、代わりにどうしたかを聞く",
+        quick_replies: null,
+        question_order: 2,
+      },
+    ],
+  },
+  {
+    interview: {
+      slug: "disaster-preparedness",
+      name: "家庭での防災の備えについてのインタビュー（募集終了）",
+      summary: "家庭での防災の備えと、避難の不安について伺いました。",
+      description: "このインタビューの募集は終了しました。",
+      publish_status: "published",
+      published_at: new Date().toISOString(),
+      status: "closed",
+      themes: ["家庭の備え", "避難の不安"],
+      mode: "loop",
+      estimated_duration: 8,
+    },
+    questions: [
+      {
+        question: "ご家庭で、どんな防災の備えをしていますか？",
+        follow_up_guide: null,
+        quick_replies: ["水・食料", "非常持ち出し袋", "特にしていない"],
+        question_order: 1,
+      },
     ],
   },
 ];
 
-export function createMiraiStances(
-  insertedBills: { id: string; name: string }[]
-): MiraiStanceInsert[] {
-  return miraiStancesData.map((stance, index) => ({
-    ...stance,
-    bill_id: insertedBills[index]?.id || "",
-  }));
-}
-
-// インタビュー設定を作成（最初の法案用）
-export function createInterviewConfig(
-  insertedBills: { id: string; name: string }[]
-): Omit<InterviewConfigInsert, "id" | "created_at" | "updated_at"> | null {
-  const targetBill = insertedBills[0];
-  if (!targetBill) return null;
-
-  return {
-    bill_id: targetBill.id,
-    name: "デフォルト設定",
-    status: "public",
-    themes: ["賛否", "理由"],
-  };
-}
-
-// インタビュー質問を作成
-export function createInterviewQuestions(
-  interviewConfigId: string
-): Omit<InterviewQuestionInsert, "id" | "created_at" | "updated_at">[] {
-  return [
-    {
-      interview_id: interviewConfigId,
-      question: "この法案に賛成ですか？反対ですか？",
-      follow_up_guide: "ユーザーの立場を明確にしてください。",
-      quick_replies: ["賛成", "反対", "どちらでもない"],
-      question_order: 1,
-    },
-    {
-      interview_id: interviewConfigId,
-      question: "その理由を教えてください。",
-      follow_up_guide: "具体的な理由を引き出してください。",
-      quick_replies: null,
-      question_order: 2,
-    },
-  ];
-}
-
-// インタビューセッションを作成（5パターン × 20回 = 100件）
-export function createInterviewSessions(
-  interviewConfigId: string
-): Omit<InterviewSessionInsert, "id" | "created_at" | "updated_at">[] {
-  const now = new Date();
-  const sessions: Omit<
-    InterviewSessionInsert,
-    "id" | "created_at" | "updated_at"
-  >[] = [];
-
-  // 20回ループして100件作成
-  for (let i = 0; i < 20; i++) {
-    const baseOffset = i * 86400000 * 3; // 3日ずつずらす
-
-    // パターン1: 完了 + レポートあり（賛成）
-    sessions.push({
-      interview_id: interviewConfigId,
-      user_id: `00000000-0000-0000-0000-${String(i * 5 + 1).padStart(12, "0")}`,
-      started_at: new Date(now.getTime() - baseOffset - 3600000).toISOString(),
-      completed_at: new Date(
-        now.getTime() - baseOffset - 3000000
-      ).toISOString(),
-    });
-
-    // パターン2: 完了 + レポートあり（反対）
-    sessions.push({
-      interview_id: interviewConfigId,
-      user_id: `00000000-0000-0000-0000-${String(i * 5 + 2).padStart(12, "0")}`,
-      started_at: new Date(now.getTime() - baseOffset - 7200000).toISOString(),
-      completed_at: new Date(
-        now.getTime() - baseOffset - 6600000
-      ).toISOString(),
-    });
-
-    // パターン3: 完了 + レポートあり（中立）
-    sessions.push({
-      interview_id: interviewConfigId,
-      user_id: `00000000-0000-0000-0000-${String(i * 5 + 3).padStart(12, "0")}`,
-      started_at: new Date(now.getTime() - baseOffset - 10800000).toISOString(),
-      completed_at: new Date(
-        now.getTime() - baseOffset - 10200000
-      ).toISOString(),
-    });
-
-    // パターン4: 完了したけどレポート未作成
-    sessions.push({
-      interview_id: interviewConfigId,
-      user_id: `00000000-0000-0000-0000-${String(i * 5 + 4).padStart(12, "0")}`,
-      started_at: new Date(now.getTime() - baseOffset - 14400000).toISOString(),
-      completed_at: new Date(
-        now.getTime() - baseOffset - 13800000
-      ).toISOString(),
-    });
-
-    // パターン5: 進行中（未完了、レポートなし）
-    sessions.push({
-      interview_id: interviewConfigId,
-      user_id: `00000000-0000-0000-0000-${String(i * 5 + 5).padStart(12, "0")}`,
-      started_at: new Date(now.getTime() - baseOffset - 1800000).toISOString(),
-      completed_at: null,
-    });
-  }
-
-  return sessions;
-}
-
-// インタビューメッセージを作成（5パターンをループ）
-export function createInterviewMessages(
-  sessionIds: string[]
-): Omit<InterviewMessageInsert, "id" | "created_at">[] {
-  const conversations = [
-    // パターン1: 賛成（完了 + レポートあり）
-    [
-      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
-      { role: "user" as const, content: "賛成です" },
-      { role: "assistant" as const, content: "その理由を教えてください。" },
-      { role: "user" as const, content: "なぜなら賛成だからです。国民のためになると思います。" },
-      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
-    ],
-    // パターン2: 反対（完了 + レポートあり）
-    [
-      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
-      { role: "user" as const, content: "反対です" },
-      { role: "assistant" as const, content: "その理由を教えてください。" },
-      { role: "user" as const, content: "財源が不明確だと思います。" },
-      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
-    ],
-    // パターン3: どちらでもない（完了 + レポートあり）
-    [
-      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
-      { role: "user" as const, content: "どちらでもないです" },
-      { role: "assistant" as const, content: "その理由を教えてください。" },
-      { role: "user" as const, content: "もっと情報が必要だと思います。" },
-      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
-    ],
-    // パターン4: 完了したけどレポート未作成
-    [
-      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
-      { role: "user" as const, content: "賛成です" },
-      { role: "assistant" as const, content: "その理由を教えてください。" },
-      { role: "user" as const, content: "良い法案だと思います。" },
-      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
-    ],
-    // パターン5: 進行中（途中で離脱）
-    [
-      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
-      { role: "user" as const, content: "うーん、ちょっと考えさせてください" },
-    ],
-  ];
-
-  const messages: Omit<InterviewMessageInsert, "id" | "created_at">[] = [];
-
-  sessionIds.forEach((sessionId, sessionIndex) => {
-    // 5パターンをループ
-    const patternIndex = sessionIndex % 5;
-    const conversation = conversations[patternIndex];
-    conversation.forEach((msg) => {
-      messages.push({
-        interview_session_id: sessionId,
-        role: msg.role,
-        content: msg.content,
-      });
-    });
-  });
-
-  return messages;
-}
-
-// インタビューレポートを作成（パターン1,2,3のみ = 5の倍数で0,1,2番目）
-export function createInterviewReports(
-  sessionIds: string[]
-): Omit<InterviewReportInsert, "id" | "created_at" | "updated_at">[] {
-  const reportTemplates = [
-    {
-      stance: "for" as const,
-      summary:
-        "この法案は国民生活の安定に寄与する重要な施策であり、賛成の立場をとる。特に物価高騰に苦しむ家庭への経済的支援効果が大きく、社会保障の充実と合わせて早期の成立を望む。",
-      role: "general_citizen" as const,
-      role_title: "一般市民",
-      role_description: "法案の内容に賛同する市民",
-      opinions: [{ title: "賛成理由", content: "国民のためになる" }],
-    },
-    {
-      stance: "against" as const,
-      summary:
-        "財源の確保が不透明であり、将来世代への負担増大が懸念されるため反対の立場をとる。歳出削減や他の財源確保策を十分に検討した上で、持続可能な制度設計を行うべきだと考える。",
-      role: "work_related" as const,
-      role_title: "会社員",
-      role_description: "財政面を懸念する市民",
-      opinions: [{ title: "反対理由", content: "財源が不明確" }],
-    },
-    {
-      stance: "neutral" as const,
-      summary:
-        "現時点では法案の効果と副作用について十分な情報が開示されておらず、賛否を判断するには時期尚早と考える。特に地方経済への影響や長期的な財政見通しについてより詳細な分析が必要。",
-      role: "subject_expert" as const,
-      role_title: "専門家",
-      role_description: "慎重な判断を求める市民",
-      opinions: [{ title: "態度保留理由", content: "情報不足" }],
-    },
-  ];
-
-  const reports: Omit<
-    InterviewReportInsert,
-    "id" | "created_at" | "updated_at"
-  >[] = [];
-
-  // パターン1,2,3（5の倍数で0,1,2番目）のみレポートを作成
-  // パターン4: 完了したけどレポート未作成
-  // パターン5: 進行中（レポートなし）
-  sessionIds.forEach((sessionId, index) => {
-    const patternIndex = index % 5;
-    if (patternIndex < 3) {
-      const loopIndex = Math.floor(index / 5);
-      reports.push({
-        interview_session_id: sessionId,
-        ...reportTemplates[patternIndex],
-        is_public_by_user: loopIndex < 5, // 最初の5件は公開
-        is_public_by_admin: loopIndex < 3, // 最初の3ループ分は管理者承認済み
-      });
-    }
-  });
-
-  return reports;
-}
-
-// デモ用の固定ID
-export const DEMO_SESSION_ID = "00000000-0000-0000-0000-000000000001";
-export const DEMO_REPORT_ID = "00000000-0000-0000-0000-000000000001";
-
-// 4種類のロールを確認するためのデモ用ID
-export const DEMO_SESSION_ID_WORK = "00000000-0000-0000-0000-000000000002";
-export const DEMO_SESSION_ID_DAILY = "00000000-0000-0000-0000-000000000003";
-export const DEMO_SESSION_ID_CITIZEN = "00000000-0000-0000-0000-000000000004";
-export const DEMO_REPORT_ID_WORK = "00000000-0000-0000-0000-000000000002";
-export const DEMO_REPORT_ID_DAILY = "00000000-0000-0000-0000-000000000003";
-export const DEMO_REPORT_ID_CITIZEN = "00000000-0000-0000-0000-000000000004";
-
-// デモ用のインタビューセッション（公開、固定ID）
-export function createDemoSession(
-  interviewConfigId: string
-): InterviewSessionInsert {
-  const now = new Date();
-  return {
-    id: DEMO_SESSION_ID,
-    interview_id: interviewConfigId,
-    user_id: "00000000-0000-0000-0000-000000000000",
-    started_at: new Date(now.getTime() - 3600000).toISOString(),
-    completed_at: new Date(now.getTime() - 3000000).toISOString(),
-  };
-}
-
-// デモ用のインタビューメッセージ
-export function createDemoMessages(): Omit<
-  InterviewMessageInsert,
-  "id" | "created_at"
->[] {
-  return [
-    {
-      interview_session_id: DEMO_SESSION_ID,
-      role: "assistant",
-      content:
-        "こんにちは！本日はインタビューにご協力いただきありがとうございます。\n\nチームみらいは今後1年で達成することをまとめた「1年プラン」を策定しようとしています。今後のチームみらいに期待する内容や、アイデア、意見について率直なご意見をお聞かせください。今後、チームみらいはどのようなことを達成してゆくと良いと思いますか？",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID,
-      role: "user",
-      content: "国会や省庁デジタル化や、ムダの削減を達成して欲しい",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID,
-      role: "assistant",
-      content:
-        "なるほど。省庁のレスポンス速度の向上と、官僚の長時間労働の削減を通じて、より優秀な人材が官僚志望になる好循環を期待されているということですね。とても重要な指摘だと思います。\n\nそうした官僚の働き方改革や人材確保という視点から見たとき、チームみらいの100日プランで実現した「みらい議会」や「みらいまるみえ政治資金」といった取り組みは、今のあなたの期待にどの程度応えていると評価されますか？",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID,
-      role: "user",
-      content:
-        "省庁のレスポンスの速さや、官僚の長時間労働が削減され、よりよい人材が官僚になっていく事を期待しています。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID,
-      role: "assistant",
-      content: "ありがとうございました。ご意見を承りました。",
-    },
-  ];
-}
-
-// デモ用のインタビューレポート（固定ID）
-export function createDemoReport(): InterviewReportInsert {
-  return {
-    id: DEMO_REPORT_ID,
-    interview_session_id: DEMO_SESSION_ID,
-    stance: "neutral",
+/** 公開された会話のサンプル（1件目のインタビューに付ける） */
+export const sampleReports = [
+  {
     summary:
-      "デジタル化推進による省庁の業務効率化や官僚の働き方改革には期待するが、システム移行時の混乱や中小フォワーダーへの対応コスト増大について懸念も大きい。慎重な段階的導入を求める。",
-    role: "subject_expert",
-    role_title: "フォワーダー",
-    role_description:
-      "中国航路担当のフォワーダー実務者\n業界経験20年\n船荷証券（B/L）手続きに日常的に関与",
-    opinions: [
-      {
-        title: "国会や省庁デジタル化や、ムダの削減を達成して欲しい",
-        content:
-          "省庁のレスポンスの速さや、官僚の長時間労働が削減され、よりよい人材が官僚になっていく事を期待している。",
-      },
+      "共働きで保育園のお迎えに間に合わない日がある。延長保育の申し込みをもっと簡単にしてほしい。",
+    role: "daily_life_affected" as const,
+    role_title: "共働きの保護者",
+    stance: "neutral" as const,
+    messages: [
+      { role: "assistant" as const, content: "子育てに関わる中で、いま一番困っていることは何ですか？" },
+      { role: "user" as const, content: "仕事が長引いて、保育園のお迎えに間に合わない日があることです。" },
+      { role: "assistant" as const, content: "そういう日はどうされていますか？" },
+      { role: "user" as const, content: "延長保育を使いたいけど、前日までに紙で申し込む必要があって、急な残業だと使えません。" },
     ],
-    is_public_by_user: true,
-    is_public_by_admin: true,
-  };
-}
-
-// 追加のデモ用セッション（3種類のロール確認用）
-export function createAdditionalDemoSessions(
-  interviewConfigId: string
-): InterviewSessionInsert[] {
-  const now = new Date();
-  return [
-    {
-      id: DEMO_SESSION_ID_WORK,
-      interview_id: interviewConfigId,
-      user_id: "00000000-0000-0000-0000-000000000010",
-      started_at: new Date(now.getTime() - 7200000).toISOString(),
-      completed_at: new Date(now.getTime() - 6600000).toISOString(),
-    },
-    {
-      id: DEMO_SESSION_ID_DAILY,
-      interview_id: interviewConfigId,
-      user_id: "00000000-0000-0000-0000-000000000011",
-      started_at: new Date(now.getTime() - 10800000).toISOString(),
-      completed_at: new Date(now.getTime() - 10200000).toISOString(),
-    },
-    {
-      id: DEMO_SESSION_ID_CITIZEN,
-      interview_id: interviewConfigId,
-      user_id: "00000000-0000-0000-0000-000000000012",
-      started_at: new Date(now.getTime() - 14400000).toISOString(),
-      completed_at: new Date(now.getTime() - 10200000).toISOString(),
-    },
-  ];
-}
-
-// 追加のデモ用メッセージ（3種類のロール確認用）
-export function createAdditionalDemoMessages(): Omit<
-  InterviewMessageInsert,
-  "id" | "created_at"
->[] {
-  return [
-    // work_related セッション用
-    {
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      role: "assistant",
-      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      role: "user",
-      content: "ガソリン価格の高騰で物流コストが上がっています。この法案には賛成です。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      role: "assistant",
-      content: "物流業界で働かれている立場からのご意見ですね。具体的にどのような影響がありますか？",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      role: "user",
-      content: "運送会社を経営していますが、燃料費が経営を圧迫しています。暫定税率廃止で少しでも負担が減れば助かります。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      role: "assistant",
-      content: "ありがとうございました。ご意見を承りました。",
-    },
-    // daily_life_affected セッション用
-    {
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      role: "assistant",
-      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      role: "user",
-      content: "地方在住で車が生活必需品なので、ガソリン代が下がるのは嬉しいです。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      role: "assistant",
-      content: "生活への影響が大きいとのことですね。どのような場面で車を使われますか？",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      role: "user",
-      content: "通勤や買い物、子供の送り迎えなど、毎日使っています。公共交通機関がほとんどない地域なので。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      role: "assistant",
-      content: "ありがとうございました。ご意見を承りました。",
-    },
-    // general_citizen セッション用
-    {
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      role: "assistant",
-      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      role: "user",
-      content: "環境問題も気になりますが、今の物価高を考えると減税は必要だと思います。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      role: "assistant",
-      content: "環境と経済のバランスを考えていらっしゃるのですね。どのような点が気になりますか？",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      role: "user",
-      content: "ガソリン車から電気自動車への移行も進めつつ、当面の生活支援として減税があってもいいと思います。",
-    },
-    {
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      role: "assistant",
-      content: "ありがとうございました。ご意見を承りました。",
-    },
-  ];
-}
-
-// 追加のデモ用レポート（3種類のロール確認用）
-export function createAdditionalDemoReports(): InterviewReportInsert[] {
-  return [
-    {
-      id: DEMO_REPORT_ID_WORK,
-      interview_session_id: DEMO_SESSION_ID_WORK,
-      stance: "for",
-      summary:
-        "燃料費高騰が運送業界の経営を直撃しており、暫定税率の廃止による物流コスト削減は急務。トラック1台あたりの年間燃料費が数十万円単位で変わるため、経営の持続可能性に直結する重要な施策だ。",
-      role: "work_related",
-      role_title: "運送会社経営者",
-      role_description:
-        "運送会社経営者\n従業員50名規模\n燃料費高騰の影響を直接受けている",
-      opinions: [
-        {
-          title: "燃料費が経営を圧迫している",
-          content:
-            "運送会社を経営しているが、燃料費が経営を圧迫している。暫定税率廃止で少しでも負担が減れば助かる。",
-        },
-      ],
-      is_public_by_user: true,
-      is_public_by_admin: true,
-    },
-    {
-      id: DEMO_REPORT_ID_DAILY,
-      interview_session_id: DEMO_SESSION_ID_DAILY,
-      stance: "for",
-      summary:
-        "公共交通機関がほぼない地方では車は唯一の移動手段であり、ガソリン代の軽減は生活に直結する問題。子育て世帯として送迎や買い物で毎日車を使うため、家計への負担軽減を強く望んでいる。",
-      role: "daily_life_affected",
-      role_title: "主婦",
-      role_description:
-        "地方在住の主婦\n車が唯一の移動手段\n子育て中で送り迎えに車を使用",
-      opinions: [
-        {
-          title: "車が生活必需品",
-          content:
-            "通勤や買い物、子供の送り迎えなど毎日車を使っている。公共交通機関がほとんどない地域なのでガソリン代が下がると助かる。",
-        },
-      ],
-      is_public_by_user: true,
-      is_public_by_admin: true,
-    },
-    {
-      id: DEMO_REPORT_ID_CITIZEN,
-      interview_session_id: DEMO_SESSION_ID_CITIZEN,
-      stance: "neutral",
-      summary:
-        "ガソリン税減税は短期的な家計支援になるが、環境負荷の観点からは化石燃料への依存を長引かせる可能性もある。EV普及支援策と組み合わせた総合的なエネルギー政策として検討すべきだと考える。",
-      role: "general_citizen",
-      role_title: "会社員",
-      role_description: "会社員\n環境問題に関心あり\n電気自動車への乗り換えを検討中",
-      opinions: [
-        {
-          title: "環境と経済のバランス",
-          content:
-            "ガソリン車から電気自動車への移行も進めつつ、当面の生活支援として減税があってもいいと考える。",
-        },
-      ],
-      is_public_by_user: true,
-      is_public_by_admin: true,
-    },
-  ];
-}
+  },
+  {
+    summary:
+      "子育ての相談窓口があることを知らなかった。必要な情報が届く仕組みがほしい。",
+    role: "general_citizen" as const,
+    role_title: "子育て中の会社員",
+    stance: "neutral" as const,
+    messages: [
+      { role: "assistant" as const, content: "使ったことのある子育て支援で、使いにくかった点はありますか？" },
+      { role: "user" as const, content: "そもそも相談窓口があるのを知らなかったです。子どもが2歳になってから知りました。" },
+    ],
+  },
+];

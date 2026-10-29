@@ -305,7 +305,7 @@ async function generateStreamingResponse({
         costUsd: providerCost,
         metadata: {
           pageType: "interview",
-          billId,
+          interviewId: billId,
           finishReason: null,
           stepCount: 0,
         },
@@ -345,7 +345,7 @@ async function generateStreamingResponse({
           metadata: {
             langfuseTraceId: telemetry.traceId,
             sessionId: telemetry.sessionId,
-            billId: telemetry.billId,
+            interviewId: telemetry.billId,
             stage: telemetry.stage,
           },
         }

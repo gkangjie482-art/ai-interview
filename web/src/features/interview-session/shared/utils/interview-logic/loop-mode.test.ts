@@ -62,9 +62,9 @@ describe("buildLoopModeSystemPrompt", () => {
       bill: null,
     });
 
-    expect(result).toContain("- 法案名: \n");
-    expect(result).toContain("- 法案タイトル: \n");
-    expect(result).toContain("- 法案要約: \n");
+    expect(result).toContain("- テーマ名: \n");
+    expect(result).toContain("- テーマタイトル: \n");
+    expect(result).toContain("- テーマ要約: \n");
   });
 
   it("テーマがプロンプトに含まれる", () => {
@@ -138,19 +138,19 @@ describe("buildLoopModeSystemPrompt", () => {
     expect(result).toContain("Loop Mode");
   });
 
-  it("質問が空の場合「（賛成か、反対か）」がフォールバックとして含まれる", () => {
+  it("質問が空の場合「（このテーマについてのご経験やお考え）」がフォールバックとして含まれる", () => {
     const result = buildLoopModeSystemPrompt({
       ...baseParams,
       questions: [],
     });
 
-    expect(result).toContain("（賛成か、反対か）");
+    expect(result).toContain("（このテーマについてのご経験やお考え）");
   });
 
-  it("法案内容の誤認検知と補足ガイダンスが含まれる", () => {
+  it("テーマ内容の誤認検知と補足ガイダンスが含まれる", () => {
     const result = buildLoopModeSystemPrompt(baseParams);
 
-    expect(result).toContain("法案内容の誤認検知と補足");
+    expect(result).toContain("テーマ内容の誤認検知と補足");
     expect(result).toContain("誤認の兆候例");
     expect(result).toContain("補足の仕方");
     expect(result).toContain("補足しない場合");

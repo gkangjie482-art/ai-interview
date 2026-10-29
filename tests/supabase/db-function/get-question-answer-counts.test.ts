@@ -13,12 +13,12 @@ async function createTestInterviewConfig(
   status: "public" | "closed" = "public"
 ) {
   const { data, error } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: billId,
+    .from("interviews")
+    .update({
       status,
       name: `テスト設定 ${Date.now()}`,
     })
+    .eq("id", billId)
     .select()
     .single();
   if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -33,7 +33,7 @@ async function createTestQuestion(
   const { data, error } = await adminClient
     .from("interview_questions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       question,
       question_order: questionOrder,
     })
@@ -47,7 +47,7 @@ async function createTestSession(configId: string, userId: string) {
   const { data, error } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       user_id: userId,
       started_at: new Date().toISOString(),
     })
@@ -116,7 +116,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();
@@ -151,7 +151,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();
@@ -176,7 +176,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();
@@ -213,7 +213,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();
@@ -232,7 +232,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();
@@ -244,7 +244,10 @@ describe("get_question_answer_counts() 関数", () => {
     const bill = await createTestBill();
     billIds.push(bill.id);
     const config1 = await createTestInterviewConfig(bill.id);
-    const config2 = await createTestInterviewConfig(bill.id, "closed");
+    // 別のインタビュー（旧スキーマでは同じ議案の別設定）
+    const otherBill = await createTestBill();
+    billIds.push(otherBill.id);
+    const config2 = await createTestInterviewConfig(otherBill.id, "closed");
     const q1 = await createTestQuestion(config1.id, "質問1", 1);
 
     // config2のセッションがconfig1の質問IDを参照しても数えない
@@ -254,7 +257,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config1.id }
+      { p_interview_id: config1.id }
     );
 
     expect(error).toBeNull();
@@ -272,7 +275,7 @@ describe("get_question_answer_counts() 関数", () => {
 
     const { data, error } = await adminClient.rpc(
       "get_question_answer_counts",
-      { p_config_id: config.id }
+      { p_interview_id: config.id }
     );
 
     expect(error).toBeNull();

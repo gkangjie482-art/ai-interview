@@ -1,20 +1,16 @@
 import "server-only";
 
-import { createAdminClient } from "@mirai-gikai/supabase";
-
+/**
+ * インタビュー設定がインタビューに属しているか確認する。
+ * 新スキーマでは設定とインタビューは同じ行なので、ID が一致すればよい。
+ */
 export async function verifyConfigBelongsToBill(
   configId: string,
   billId: string
 ): Promise<void> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("interview_configs")
-    .select("id")
-    .eq("id", configId)
-    .eq("bill_id", billId)
-    .single();
-
-  if (error || !data) {
-    throw new Error("指定されたインタビュー設定はこの議案に属していません");
+  if (configId !== billId) {
+    throw new Error(
+      "指定されたインタビュー設定はこのインタビューに属していません"
+    );
   }
 }

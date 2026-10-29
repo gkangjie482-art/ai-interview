@@ -10,12 +10,12 @@ import {
 
 async function createTestInterviewConfig(billId: string) {
   const { data, error } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: billId,
+    .from("interviews")
+    .update({
       status: "public",
       name: `テスト設定 ${Date.now()}`,
     })
+    .eq("id", billId)
     .select()
     .single();
   if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -35,7 +35,7 @@ async function createTestSession(
   const { data, error } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       user_id: userId,
       started_at: startedAt,
       completed_at: completedAt ?? null,
@@ -103,7 +103,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: false,
         p_offset: 0,
         p_limit: 10,
@@ -131,7 +131,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: true,
         p_offset: 0,
         p_limit: 10,
@@ -162,7 +162,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: false,
         p_offset: 0,
         p_limit: 10,
@@ -195,7 +195,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: false,
         p_offset: 0,
         p_limit: 10,
@@ -224,7 +224,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: false,
         p_offset: 1,
         p_limit: 2,
@@ -251,7 +251,7 @@ describe("find_sessions_ordered_by_total_content_richness() 関数", () => {
     const { data, error } = await adminClient.rpc(
       "find_sessions_ordered_by_total_content_richness",
       {
-        p_config_id: config.id,
+        p_interview_id: config.id,
         p_ascending: false,
         p_offset: 0,
         p_limit: 10,

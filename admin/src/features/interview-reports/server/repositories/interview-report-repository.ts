@@ -48,7 +48,7 @@ export async function findInterviewSessionsWithReport(
   let query = supabase
     .from("interview_sessions")
     .select(selectQuery)
-    .eq("interview_config_id", configId);
+    .eq("interview_id", configId);
 
   // ステータスフィルタ
   if (filters.status === "completed") {
@@ -102,7 +102,7 @@ export async function findSessionIdsOrderedByMessageCount(
   const { data, error } = await supabase.rpc(
     "find_sessions_ordered_by_message_count",
     {
-      p_config_id: configId,
+      p_interview_id: configId,
       p_ascending: ascending,
       p_offset: offset,
       p_limit: limit,
@@ -154,7 +154,7 @@ export async function findFilteredSessionIds(
     let reportQuery = supabase
       .from("interview_report")
       .select("interview_session_id, interview_sessions!inner(id)")
-      .eq("interview_sessions.interview_config_id", configId);
+      .eq("interview_sessions.interview_id", configId);
 
     if (filters.status === "completed") {
       reportQuery = reportQuery.not(
@@ -205,7 +205,7 @@ export async function findFilteredSessionIds(
   let query = supabase
     .from("interview_sessions")
     .select("id")
-    .eq("interview_config_id", configId);
+    .eq("interview_id", configId);
 
   if (filters.status === "completed") {
     query = query.not("completed_at", "is", null);
@@ -235,7 +235,7 @@ export async function findSessionIdsOrderedByTotalContentRichness(
   const { data, error } = await supabase.rpc(
     "find_sessions_ordered_by_total_content_richness",
     {
-      p_config_id: configId,
+      p_interview_id: configId,
       p_ascending: ascending,
       p_offset: offset,
       p_limit: limit,
@@ -263,7 +263,7 @@ export async function findSessionIdsOrderedByHelpfulCount(
   const { data, error } = await supabase.rpc(
     "find_sessions_ordered_by_helpful_count",
     {
-      p_config_id: configId,
+      p_interview_id: configId,
       p_ascending: ascending,
       p_offset: offset,
       p_limit: limit,
@@ -291,7 +291,7 @@ export async function findSessionIdsOrderedByModerationScore(
   const { data, error } = await supabase.rpc(
     "find_sessions_ordered_by_moderation_score",
     {
-      p_config_id: configId,
+      p_interview_id: configId,
       p_ascending: ascending,
       p_offset: offset,
       p_limit: limit,
@@ -356,7 +356,7 @@ export async function countInterviewSessionsByConfigId(
   let query = supabase
     .from("interview_sessions")
     .select(selectQuery, { count: "exact", head: true })
-    .eq("interview_config_id", configId);
+    .eq("interview_id", configId);
 
   // ステータスフィルタ
   if (filters.status === "completed") {
@@ -464,7 +464,7 @@ export async function searchUserMessagesByConfigId(
     .from("interview_messages")
     .select(selectQuery)
     .eq("role", "user")
-    .eq("interview_sessions.interview_config_id", configId)
+    .eq("interview_sessions.interview_id", configId)
     .ilike("content", `%${escapeIlikePattern(query)}%`);
 
   if (filters.stance !== "all") {
@@ -539,41 +539,10 @@ export async function findFeedbackTagsBySessionId(
   return (data || []).map((row) => row.tag);
 }
 
-export type InterviewMetricsByBillRow = {
-  bill_id: string;
-  bill_name: string;
-  conducted_count: number;
-  completed_count: number;
-  completion_rate: number;
-  total_duration_seconds: number;
-  total_duration_seconds_under_1h: number;
-};
-
-/**
- * 議案ごとのAIインタビュー実施数・完了数・完了率・総回答時間（1時間以上のセッション除外版を含む）を取得する。
- * billId を指定すると単一議案に絞り込み、省略すると設定を持つ全議案を返す。
- */
-export async function findInterviewMetricsByBill(
-  billId?: string
-): Promise<InterviewMetricsByBillRow[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase.rpc("get_interview_metrics_by_bill", {
-    p_bill_id: billId,
-  });
-
-  if (error) {
-    throw new Error(
-      `Failed to fetch interview metrics by bill: ${error.message}`
-    );
-  }
-
-  return data ?? [];
-}
-
 export async function findInterviewStatistics(configId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase.rpc("get_interview_statistics", {
-    p_config_id: configId,
+    p_interview_id: configId,
   });
 
   if (error) {
@@ -586,7 +555,7 @@ export async function findInterviewStatistics(configId: string) {
 export async function findQuestionAnswerCounts(configId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase.rpc("get_question_answer_counts", {
-    p_config_id: configId,
+    p_interview_id: configId,
   });
 
   if (error) {

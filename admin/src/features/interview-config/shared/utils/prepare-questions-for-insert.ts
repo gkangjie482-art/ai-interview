@@ -9,7 +9,7 @@ export function prepareQuestionsForInsert(
   interviewConfigId: string
 ) {
   return questions.map((question, index) => ({
-    interview_config_id: interviewConfigId,
+    interview_id: interviewConfigId,
     question: question.question,
     follow_up_guide: question.follow_up_guide || null,
     quick_replies: question.quick_replies || null,

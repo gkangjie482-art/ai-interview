@@ -1094,24 +1094,6 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('interview-thumbnails', '
 CREATE POLICY "interview_thumbnails_public_read" ON storage.objects FOR SELECT USING (bucket_id = 'interview-thumbnails');
 
 -- 公開された会話の一覧（おすすめ順＝内容の充実度順 / 新着順）
-CREATE OR REPLACE FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer DEFAULT 1000, "p_offset" integer DEFAULT 0, "p_stance" "text" DEFAULT NULL::"text", "p_sort_order" "text" DEFAULT 'recommended'::"text") RETURNS TABLE("id" "uuid", "stance" "public"."stance_type_enum", "role" "public"."interview_report_role_enum", "role_title" "text", "summary" "text", "total_content_richness" integer, "created_at" timestamp with time zone)
-    LANGUAGE "sql" STABLE
-    SET "search_path" TO 'public'
-    AS $$
-  select ir.id, ir.stance, ir.role, ir.role_title, ir.summary, ir.total_content_richness, ir.created_at
-  from interview_report ir
-  join interview_sessions s on s.id = ir.interview_session_id
-  where ir.is_public_by_admin and ir.is_public_by_user
-    and s.interview_id = p_interview_id
-    and (p_stance is null or ir.stance::text = p_stance)
-  order by
-    case when p_sort_order = 'newest' then null else coalesce(ir.total_content_richness, 0) end desc nulls last,
-    ir.created_at desc,
-    ir.id desc
-  limit p_limit offset p_offset;
-$$;
-REVOKE ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") FROM PUBLIC;
-GRANT ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") TO "service_role";
 
 -- スタンスごとの公開された会話の件数
 CREATE OR REPLACE FUNCTION "public"."count_public_reports_by_stance"("p_interview_id" "uuid") RETURNS TABLE("stance" "text", "count" bigint)
@@ -1171,3 +1153,83 @@ $$;
 REVOKE ALL ON FUNCTION "public"."count_reactions_by_report_ids"("report_ids" "uuid"[]) FROM PUBLIC;
 
 GRANT ALL ON FUNCTION "public"."count_reactions_by_report_ids"("report_ids" "uuid"[]) TO "service_role";
+
+-- サムネイルのアップロード・差し替え・削除は管理者のみ
+CREATE POLICY "interview_thumbnails_admin_insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'interview-thumbnails' AND public.is_admin());
+CREATE POLICY "interview_thumbnails_admin_update" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'interview-thumbnails' AND public.is_admin());
+CREATE POLICY "interview_thumbnails_admin_delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'interview-thumbnails' AND public.is_admin());
+
+-- 回答一覧の「参考になった」数での並び替え
+CREATE OR REPLACE FUNCTION "public"."find_sessions_ordered_by_helpful_count"("p_interview_id" "uuid", "p_ascending" boolean DEFAULT false, "p_offset" integer DEFAULT 0, "p_limit" integer DEFAULT 30, "p_status" "text" DEFAULT NULL::"text", "p_visibility" "text" DEFAULT NULL::"text", "p_stance" "text" DEFAULT NULL::"text", "p_role" "text" DEFAULT NULL::"text") RETURNS TABLE("session_id" "uuid")
+    LANGUAGE "plpgsql" STABLE
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT s.id AS session_id
+  FROM interview_sessions s
+  LEFT JOIN interview_report r ON r.interview_session_id = s.id
+  LEFT JOIN (
+    SELECT rr.interview_report_id, COUNT(*)::BIGINT AS cnt
+    FROM report_reactions rr
+    WHERE rr.reaction_type = 'helpful'
+    GROUP BY rr.interview_report_id
+  ) hc ON hc.interview_report_id = r.id
+  WHERE s.interview_id = p_interview_id
+    AND (p_status IS NULL OR
+         (p_status = 'completed' AND s.completed_at IS NOT NULL) OR
+         (p_status = 'in_progress' AND s.completed_at IS NULL AND s.archived_at IS NULL) OR
+         (p_status = 'archived' AND s.completed_at IS NULL AND s.archived_at IS NOT NULL))
+    AND (p_visibility IS NULL OR
+         (p_visibility = 'public' AND r.is_public_by_admin = TRUE) OR
+         (p_visibility = 'private' AND r.is_public_by_admin = FALSE))
+    AND (p_stance IS NULL OR r.stance = p_stance::stance_type_enum)
+    AND (p_role IS NULL OR r.role = p_role::interview_report_role_enum)
+  ORDER BY
+    CASE WHEN p_ascending THEN COALESCE(hc.cnt, 0) END ASC,
+    CASE WHEN NOT p_ascending THEN COALESCE(hc.cnt, 0) END DESC,
+    s.started_at DESC,
+    s.id DESC
+  OFFSET p_offset
+  LIMIT p_limit;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION "public"."find_sessions_ordered_by_helpful_count"("p_interview_id" "uuid", "p_ascending" boolean, "p_offset" integer, "p_limit" integer, "p_status" "text", "p_visibility" "text", "p_stance" "text", "p_role" "text") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."find_sessions_ordered_by_helpful_count"("p_interview_id" "uuid", "p_ascending" boolean, "p_offset" integer, "p_limit" integer, "p_status" "text", "p_visibility" "text", "p_stance" "text", "p_role" "text") TO "service_role";
+
+-- 公開された会話の一覧（おすすめ順＝参考になった数＋内容の充実度 / 新着順）
+CREATE OR REPLACE FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer DEFAULT 1000, "p_offset" integer DEFAULT 0, "p_stance" "text" DEFAULT NULL::"text", "p_sort_order" "text" DEFAULT 'recommended'::"text") RETURNS TABLE("id" "uuid", "stance" "public"."stance_type_enum", "role" "public"."interview_report_role_enum", "role_title" "text", "summary" "text", "total_content_richness" integer, "created_at" timestamp with time zone)
+    LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
+    AS $$
+  select ir.id, ir.stance, ir.role, ir.role_title, ir.summary, ir.total_content_richness, ir.created_at
+  from interview_report ir
+  join interview_sessions s on s.id = ir.interview_session_id
+  left join (
+    select rr.interview_report_id, count(*) as helpful_count
+    from report_reactions rr
+    where rr.reaction_type = 'helpful'
+    group by rr.interview_report_id
+  ) rc on rc.interview_report_id = ir.id
+  where ir.is_public_by_admin and ir.is_public_by_user
+    and s.interview_id = p_interview_id
+    and (p_stance is null or ir.stance::text = p_stance)
+  order by
+    case when p_sort_order = 'newest' then null
+         else coalesce(rc.helpful_count, 0) + coalesce(ir.total_content_richness, 0) end desc nulls last,
+    ir.created_at desc,
+    ir.id desc
+  limit p_limit offset p_offset;
+$$;
+REVOKE ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") TO "service_role";
+
+-- ============================================================
+-- 関数の実行権限
+-- Supabase は新しい関数に anon / authenticated の EXECUTE を自動で付けるため、
+-- REVOKE FROM PUBLIC だけでは不十分。DB 関数はすべてサーバー側（service_role）からのみ呼ぶ。
+-- 例外: is_admin() はストレージのポリシーから authenticated として評価される。
+-- ============================================================
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA "public" FROM PUBLIC, "anon", "authenticated";
+GRANT EXECUTE ON FUNCTION "public"."is_admin"() TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, "anon", "authenticated";

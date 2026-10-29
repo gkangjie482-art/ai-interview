@@ -11,18 +11,13 @@ export function createAdminClient() {
 }
 
 const TABLES_TO_CLEAR = [
+  "report_reactions",
   "interview_report",
   "interview_messages",
   "interview_sessions",
   "interview_questions",
-  "interview_configs",
-  "mirai_stances",
-  "chats",
-  "bill_contents",
-  "bills_tags",
-  "bills",
-  "tags",
-  "diet_sessions",
+  "preview_tokens",
+  "interviews",
 ] as const;
 
 export async function clearAllData(supabase: AdminClient) {

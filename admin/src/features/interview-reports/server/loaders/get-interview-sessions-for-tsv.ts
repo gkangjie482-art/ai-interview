@@ -37,7 +37,7 @@ async function fetchAllSessions(
     const { data, error } = await supabase
       .from("interview_sessions")
       .select("*, interview_report(*)")
-      .eq("interview_config_id", configId)
+      .eq("interview_id", configId)
       .order("started_at", { ascending: true })
       .range(from, to);
     if (error) {

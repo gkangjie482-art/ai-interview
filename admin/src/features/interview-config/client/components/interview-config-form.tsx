@@ -6,8 +6,6 @@ import {
 } from "@mirai-gikai/shared/interview-prompts/sections";
 import type { InterviewMode } from "@mirai-gikai/shared/interview-prompts/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye } from "lucide-react";
-import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import type { MutableRefObject } from "react";
 import { useEffect, useState } from "react";
@@ -35,12 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { routes } from "@/lib/routes";
-import { generateInterviewPreviewUrl } from "../../server/actions/generate-interview-preview-url";
-import {
-  createInterviewConfig,
-  updateInterviewConfig,
-} from "../../server/actions/upsert-interview-config";
+import { updateInterviewConfig } from "../../server/actions/upsert-interview-config";
 import {
   arrayToText,
   type InterviewConfig,
@@ -52,18 +45,14 @@ import {
   CHAT_MODEL_GROUPS,
   DEFAULT_MODEL_LABEL,
 } from "../../shared/utils/chat-model-options";
-import { generateDefaultConfigName } from "../../shared/utils/default-config-name";
 import { PromptOverridesFields } from "./prompt-overrides-fields";
 
 interface InterviewConfigFormProps {
-  billId: string;
-  config: InterviewConfig | null;
+  config: InterviewConfig;
   aiGeneratedThemes?: string[] | null;
   onAiThemesApplied?: () => void;
-  onConfigCreated?: (configId: string) => Promise<void>;
   getFormValuesRef?: MutableRefObject<
     | (() => {
-        name: string;
         mode: string;
         themes: string[];
         chat_model: string | null;
@@ -72,33 +61,25 @@ interface InterviewConfigFormProps {
       })
     | null
   >;
-  /** 新規作成時の設定名初期値（ログインユーザー名） */
-  initialName?: string | null;
 }
 
 export function InterviewConfigForm({
-  billId,
   config,
   aiGeneratedThemes,
   onAiThemesApplied,
-  onConfigCreated,
   getFormValuesRef,
-  initialName,
 }: InterviewConfigFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isNew = !config;
 
   const form = useForm<InterviewConfigInput>({
     resolver: zodResolver(interviewConfigSchema),
     defaultValues: {
-      name: config?.name || initialName || generateDefaultConfigName(),
-      status: config?.status || "closed",
-      mode: config?.mode || "loop",
-      themes: config?.themes || [],
-      chat_model: config?.chat_model || null,
-      estimated_duration: isNew ? 10 : (config?.estimated_duration ?? null),
-      prompt_overrides: parsePromptOverridesByMode(config?.prompt_overrides),
+      mode: config.mode || "loop",
+      themes: config.themes || [],
+      chat_model: config.chat_model || null,
+      estimated_duration: config.estimated_duration ?? 10,
+      prompt_overrides: parsePromptOverridesByMode(config.prompt_overrides),
     },
   });
 
@@ -108,7 +89,6 @@ export function InterviewConfigForm({
       getFormValuesRef.current = () => {
         const values = form.getValues();
         return {
-          name: values.name,
           mode: values.mode,
           themes: values.themes || [],
           chat_model: values.chat_model || null,
@@ -131,24 +111,10 @@ export function InterviewConfigForm({
   const handleSubmit = async (data: InterviewConfigInput) => {
     setIsSubmitting(true);
     try {
-      const result = isNew
-        ? await createInterviewConfig(billId, data)
-        : await updateInterviewConfig(config.id, data);
-
+      const result = await updateInterviewConfig(config.id, data);
       if (result.success) {
-        if (isNew) {
-          // 新規作成時: 質問があればコールバックで保存してから遷移
-          if (onConfigCreated) {
-            await onConfigCreated(result.data.id);
-          }
-          toast.success("インタビュー設定を作成しました");
-          router.push(
-            routes.billInterviewEdit(billId, result.data.id) as Route
-          );
-        } else {
-          toast.success("インタビュー設定を保存しました");
-          router.refresh();
-        }
+        toast.success("AI設定を保存しました");
+        router.refresh();
       } else {
         toast.error(result.error || "エラーが発生しました");
       }
@@ -160,66 +126,11 @@ export function InterviewConfigForm({
     }
   };
 
-  const [isPreviewing, setIsPreviewing] = useState(false);
-  const handlePreview = async () => {
-    if (!config) {
-      toast.error("プレビューは設定保存後に利用できます");
-      return;
-    }
-
-    // プレビューの前に保存を実行
-    const data = form.getValues();
-    const isValid = await form.trigger();
-    if (!isValid) {
-      toast.error("入力内容を確認してください");
-      return;
-    }
-
-    setIsPreviewing(true);
-    try {
-      // 1. 保存
-      const saveResult = await updateInterviewConfig(config.id, data);
-      if (!saveResult.success) {
-        toast.error(saveResult.error || "保存に失敗しました");
-        return;
-      }
-
-      // 2. プレビューURL生成
-      const result = await generateInterviewPreviewUrl(billId);
-
-      if (result.success && result.url) {
-        window.open(result.url, "_blank");
-      } else {
-        toast.error(result.error || "プレビューURLの生成に失敗しました");
-      }
-    } catch (error) {
-      console.error("Preview URL generation failed:", error);
-      toast.error("プレビューURLの生成中にエラーが発生しました");
-    } finally {
-      setIsPreviewing(false);
-    }
-  };
-
   return (
     <div className="space-y-4">
-      {config && (
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handlePreview}
-            disabled={isPreviewing}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            {isPreviewing ? "準備中..." : "プレビュー"}
-          </Button>
-        </div>
-      )}
-
       <Card>
         <CardHeader>
-          <CardTitle>インタビュー設定</CardTitle>
+          <CardTitle>AI設定</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -227,51 +138,6 @@ export function InterviewConfigForm({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-6"
             >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>設定名</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="例: デフォルト設定、A/Bテスト用など"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      設定を識別するための名前を入力してください
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ステータス</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="ステータスを選択" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="public">公開（有効）</SelectItem>
-                        <SelectItem value="closed">非公開（無効）</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      インタビュー機能の有効/無効を設定します。公開設定は法案ごとに1つのみ可能です。
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="mode"

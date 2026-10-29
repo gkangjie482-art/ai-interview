@@ -9,7 +9,7 @@ function buildSession(
 ): InterviewSessionForTsv {
   return {
     id: "session-1",
-    interview_config_id: "config-1",
+    interview_id: "config-1",
     user_id: "user-1",
     started_at: "2026-01-01T00:00:00Z",
     completed_at: "2026-01-01T00:10:00Z",

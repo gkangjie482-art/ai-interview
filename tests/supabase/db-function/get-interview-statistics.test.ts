@@ -11,12 +11,12 @@ import {
 
 async function createTestInterviewConfig(billId: string) {
   const { data, error } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: billId,
+    .from("interviews")
+    .update({
       status: "public",
       name: `テスト設定 ${Date.now()}`,
     })
+    .eq("id", billId)
     .select()
     .single();
   if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -35,7 +35,7 @@ async function createTestSession(
   const { data, error } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       user_id: userId,
       started_at: new Date().toISOString(),
       ...overrides,
@@ -118,7 +118,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config.id, testUser.id);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -137,7 +137,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config.id, testUser.id); // rating なし
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -160,7 +160,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestReport(s4.id, { stance: "neutral" });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -180,7 +180,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestReport(s2.id, { content_richness: { total: 60 } });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -200,7 +200,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestReport(s3.id, { role: "general_citizen" });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -222,7 +222,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config.id, testUser.id); // 0件
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -243,7 +243,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestReport(s3.id, { is_public_by_user: true });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -263,7 +263,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config2.id, testUser.id);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config1.id,
+      p_interview_id: config1.id,
     });
 
     expect(error).toBeNull();
@@ -298,7 +298,7 @@ describe("get_interview_statistics() 関数", () => {
       ]);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -317,7 +317,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config.id, testUser.id, { rating: 5 });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -370,7 +370,7 @@ describe("get_interview_statistics() 関数", () => {
     });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -388,7 +388,7 @@ describe("get_interview_statistics() 関数", () => {
     await createTestSession(config.id, testUser.id);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -430,7 +430,7 @@ describe("get_interview_statistics() 関数", () => {
     ]);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config1.id,
+      p_interview_id: config1.id,
     });
 
     expect(error).toBeNull();
@@ -469,7 +469,7 @@ describe("get_interview_statistics() 関数", () => {
     });
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -508,7 +508,7 @@ describe("get_interview_statistics() 関数", () => {
     await insertInterviewMessage(dropout.id, iso(7200));
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -527,7 +527,7 @@ describe("get_interview_statistics() 関数", () => {
     const config = await createTestInterviewConfig(bill.id);
 
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: config.id,
+      p_interview_id: config.id,
     });
 
     expect(error).toBeNull();
@@ -537,7 +537,7 @@ describe("get_interview_statistics() 関数", () => {
 
   it("存在しないconfig_idではすべてゼロ/NULLの行を返す", async () => {
     const { data, error } = await adminClient.rpc("get_interview_statistics", {
-      p_config_id: "00000000-0000-0000-0000-000000000000",
+      p_interview_id: "00000000-0000-0000-0000-000000000000",
     });
 
     expect(error).toBeNull();

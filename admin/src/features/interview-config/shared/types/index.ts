@@ -5,12 +5,10 @@ import { z } from "zod";
 import { isValidChatModel } from "../utils/chat-model-options";
 
 // Database types
-export type InterviewConfig =
-  Database["public"]["Tables"]["interview_configs"]["Row"];
-export type InterviewConfigInsert =
-  Database["public"]["Tables"]["interview_configs"]["Insert"];
+/** インタビュー設定は interviews 行そのもの（AIに関する列を編集する） */
+export type InterviewConfig = Database["public"]["Tables"]["interviews"]["Row"];
 export type InterviewConfigUpdate =
-  Database["public"]["Tables"]["interview_configs"]["Update"];
+  Database["public"]["Tables"]["interviews"]["Update"];
 
 export type InterviewQuestion =
   Database["public"]["Tables"]["interview_questions"]["Row"];
@@ -55,13 +53,8 @@ export { PROMPT_SECTION_MAX_LENGTH };
 
 export type PromptOverridesInput = z.infer<typeof promptOverridesSchema>;
 
-// バリデーションスキーマ
+// バリデーションスキーマ（タイトル・募集状況は基本情報フォームで扱う）
 export const interviewConfigSchema = z.object({
-  name: z
-    .string()
-    .min(1, "設定名は必須です")
-    .max(100, "設定名は100文字以内で入力してください"),
-  status: z.enum(["public", "closed"]),
   mode: z.enum(INTERVIEW_MODES),
   themes: z.array(z.string().min(1)).optional(),
   chat_model: z
