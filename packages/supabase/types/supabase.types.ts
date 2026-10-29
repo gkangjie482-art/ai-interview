@@ -453,6 +453,39 @@ export type Database = {
           },
         ];
       };
+      report_reactions: {
+        Row: {
+          created_at: string;
+          id: string;
+          interview_report_id: string;
+          reaction_type: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          interview_report_id: string;
+          reaction_type: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          interview_report_id?: string;
+          reaction_type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "report_reactions_interview_report_id_fkey";
+            columns: ["interview_report_id"];
+            isOneToOne: false;
+            referencedRelation: "interview_report";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -481,6 +514,21 @@ export type Database = {
           report_count: number;
         }[];
       };
+      count_public_reports_by_stance: {
+        Args: { p_interview_id: string };
+        Returns: {
+          count: number;
+          stance: string;
+        }[];
+      };
+      count_reactions_by_report_ids: {
+        Args: { report_ids: string[] };
+        Returns: {
+          cnt: number;
+          interview_report_id: string;
+          reaction_type: string;
+        }[];
+      };
       count_sessions_by_interview_ids: {
         Args: { p_interview_ids: string[] };
         Returns: {
@@ -491,6 +539,24 @@ export type Database = {
       extract_assistant_question_id: {
         Args: { content: string };
         Returns: string;
+      };
+      find_public_reports_by_interview_id: {
+        Args: {
+          p_interview_id: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_sort_order?: string;
+          p_stance?: string;
+        };
+        Returns: {
+          created_at: string;
+          id: string;
+          role: Database["public"]["Enums"]["interview_report_role_enum"];
+          role_title: string;
+          stance: Database["public"]["Enums"]["stance_type_enum"];
+          summary: string;
+          total_content_richness: number;
+        }[];
       };
       find_sessions_ordered_by_message_count: {
         Args: {

@@ -3,7 +3,7 @@
 import { Upload } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ReportShareModal } from "@/features/report-reaction/client/components/report-share-modal";
+import { ReportShareModal } from "@/features/interview-report/client/components/report-share-modal";
 
 interface ShareArticleButtonProps {
   billName: string;

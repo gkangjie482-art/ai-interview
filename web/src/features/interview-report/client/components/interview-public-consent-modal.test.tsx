@@ -19,17 +19,15 @@ function renderModal(overrides: { isSubmitting?: boolean } = {}) {
 }
 
 describe("InterviewPublicConsentModal", () => {
-  it("オープンデータ提供の告知とデータ利用規約リンクを表示する", () => {
+  it("全文公開の注意を表示し、データ利用規約へのリンクは出さない", () => {
     renderModal();
 
     expect(
-      screen.getByText(/第三者にオープンデータとして提供されることがあります/)
+      screen.getByText(/インタビュー原文が匿名で掲載されることがあります/)
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", {
-        name: "AIインタビューデータ利用規約",
-      })
-    ).toBeInTheDocument();
+      screen.queryByRole("link", { name: "AIインタビューデータ利用規約" })
+    ).not.toBeInTheDocument();
   });
 
   it("公開許可で onSubmit(true)、非公開で onSubmit(false) を呼ぶ", async () => {

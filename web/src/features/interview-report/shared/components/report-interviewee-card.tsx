@@ -1,9 +1,9 @@
-import { mapRoleToCategory } from "@mirai-gikai/topic-analysis-core/public";
 import { CalendarDays, NotebookText, UserRound } from "lucide-react";
 import {
-  userCategoryColorClass,
-  userCategoryLabels,
-} from "@/features/user-topic-analysis/shared/utils/topic-category";
+  mapRoleToCategory,
+  respondentCategoryColorClass as userCategoryColorClass,
+  respondentCategoryLabels as userCategoryLabels,
+} from "../utils/respondent-category";
 import { cn } from "@/lib/utils";
 import {
   formatAnsweredAt,

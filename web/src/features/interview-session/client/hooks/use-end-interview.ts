@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 import { archiveInterviewSession } from "../../server/actions/archive-interview-session";
 
 /**
@@ -39,7 +39,7 @@ export function useEndInterview(
     } catch (error) {
       console.error("Failed to archive session on end:", error);
     }
-    router.push(getBillDetailLink(billId, previewToken) as Route);
+    router.push(getInterviewLPLink(billId, previewToken) as Route);
   };
 
   return { endInterview, isEnding };

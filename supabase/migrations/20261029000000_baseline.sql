@@ -1092,3 +1092,82 @@ GRANT ALL ON FUNCTION "public"."get_interview_metrics"("p_interview_id" "uuid") 
 -- サムネイル画像用ストレージ
 INSERT INTO storage.buckets (id, name, public) VALUES ('interview-thumbnails', 'interview-thumbnails', true) ON CONFLICT (id) DO NOTHING;
 CREATE POLICY "interview_thumbnails_public_read" ON storage.objects FOR SELECT USING (bucket_id = 'interview-thumbnails');
+
+-- 公開された会話の一覧（おすすめ順＝内容の充実度順 / 新着順）
+CREATE OR REPLACE FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer DEFAULT 1000, "p_offset" integer DEFAULT 0, "p_stance" "text" DEFAULT NULL::"text", "p_sort_order" "text" DEFAULT 'recommended'::"text") RETURNS TABLE("id" "uuid", "stance" "public"."stance_type_enum", "role" "public"."interview_report_role_enum", "role_title" "text", "summary" "text", "total_content_richness" integer, "created_at" timestamp with time zone)
+    LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
+    AS $$
+  select ir.id, ir.stance, ir.role, ir.role_title, ir.summary, ir.total_content_richness, ir.created_at
+  from interview_report ir
+  join interview_sessions s on s.id = ir.interview_session_id
+  where ir.is_public_by_admin and ir.is_public_by_user
+    and s.interview_id = p_interview_id
+    and (p_stance is null or ir.stance::text = p_stance)
+  order by
+    case when p_sort_order = 'newest' then null else coalesce(ir.total_content_richness, 0) end desc nulls last,
+    ir.created_at desc,
+    ir.id desc
+  limit p_limit offset p_offset;
+$$;
+REVOKE ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."find_public_reports_by_interview_id"("p_interview_id" "uuid", "p_limit" integer, "p_offset" integer, "p_stance" "text", "p_sort_order" "text") TO "service_role";
+
+-- スタンスごとの公開された会話の件数
+CREATE OR REPLACE FUNCTION "public"."count_public_reports_by_stance"("p_interview_id" "uuid") RETURNS TABLE("stance" "text", "count" bigint)
+    LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
+    AS $$
+  select ir.stance::text as stance, count(*) as count
+  from interview_report ir
+  join interview_sessions s on s.id = ir.interview_session_id
+  where ir.is_public_by_admin and ir.is_public_by_user and s.interview_id = p_interview_id
+  group by ir.stance;
+$$;
+REVOKE ALL ON FUNCTION "public"."count_public_reports_by_stance"("p_interview_id" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."count_public_reports_by_stance"("p_interview_id" "uuid") TO "service_role";
+
+-- 「参考になった」リアクション
+
+CREATE TABLE IF NOT EXISTS "public"."report_reactions" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "interview_report_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "reaction_type" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "report_reactions_reaction_type_check" CHECK (("reaction_type" = ANY (ARRAY['helpful'::"text", 'hmm'::"text"])))
+);
+
+ALTER TABLE ONLY "public"."report_reactions"
+    ADD CONSTRAINT "report_reactions_interview_report_id_user_id_key" UNIQUE ("interview_report_id", "user_id");
+
+ALTER TABLE ONLY "public"."report_reactions"
+    ADD CONSTRAINT "report_reactions_pkey" PRIMARY KEY ("id");
+
+CREATE INDEX "idx_report_reactions_report_id" ON "public"."report_reactions" USING "btree" ("interview_report_id");
+
+CREATE INDEX "idx_report_reactions_user_id" ON "public"."report_reactions" USING "btree" ("user_id");
+
+ALTER TABLE ONLY "public"."report_reactions"
+    ADD CONSTRAINT "report_reactions_interview_report_id_fkey" FOREIGN KEY ("interview_report_id") REFERENCES "public"."interview_report"("id") ON DELETE CASCADE;
+
+ALTER TABLE "public"."report_reactions" ENABLE ROW LEVEL SECURITY;
+
+
+GRANT ALL ON TABLE "public"."report_reactions" TO "service_role";
+
+CREATE OR REPLACE FUNCTION "public"."count_reactions_by_report_ids"("report_ids" "uuid"[]) RETURNS TABLE("interview_report_id" "uuid", "reaction_type" "text", "cnt" bigint)
+    LANGUAGE "sql" STABLE
+    AS $$
+  select
+    r.interview_report_id,
+    r.reaction_type,
+    count(*) as cnt
+  from report_reactions r
+  where r.interview_report_id = any(report_ids)
+  group by r.interview_report_id, r.reaction_type;
+$$;
+
+REVOKE ALL ON FUNCTION "public"."count_reactions_by_report_ids"("report_ids" "uuid"[]) FROM PUBLIC;
+
+GRANT ALL ON FUNCTION "public"."count_reactions_by_report_ids"("report_ids" "uuid"[]) TO "service_role";

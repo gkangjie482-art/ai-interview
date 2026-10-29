@@ -38,7 +38,7 @@ export function createShippingBillQuestions(
 ): Omit<InterviewQuestionInsert, "id" | "created_at" | "updated_at">[] {
   return [
     {
-      interview_config_id: configId,
+      interview_id: configId,
       question:
         "船荷証券の電子化について、賛成ですか？反対ですか？",
       follow_up_guide:
@@ -47,7 +47,7 @@ export function createShippingBillQuestions(
       question_order: 1,
     },
     {
-      interview_config_id: configId,
+      interview_id: configId,
       question:
         "電子化によって、あなたの業務や生活にどのような影響がありますか？",
       follow_up_guide:
@@ -56,7 +56,7 @@ export function createShippingBillQuestions(
       question_order: 2,
     },
     {
-      interview_config_id: configId,
+      interview_id: configId,
       question:
         "実施にあたって、どのような課題や不安がありますか？",
       follow_up_guide:
@@ -435,7 +435,7 @@ export function createShippingBillSessions(
     for (let p = 0; p < opinionPatterns.length; p++) {
       const userNum = loop * opinionPatterns.length + p + 200;
       sessions.push({
-        interview_config_id: configId,
+        interview_id: configId,
         user_id: `00000000-0000-0000-0000-${String(userNum).padStart(12, "0")}`,
         started_at: new Date(
           now.getTime() - baseOffset - (p + 1) * 3600000
@@ -678,7 +678,7 @@ export function createRealisticShippingBillSession(
 ): Omit<InterviewSessionInsert, "id" | "created_at" | "updated_at"> {
   const now = new Date();
   return {
-    interview_config_id: configId,
+    interview_id: configId,
     // 既存 opinionPatterns が 200 番台を使っているので被らない番号に
     user_id: "00000000-0000-0000-0000-000000000500",
     started_at: new Date(now.getTime() - 40 * 60000).toISOString(),

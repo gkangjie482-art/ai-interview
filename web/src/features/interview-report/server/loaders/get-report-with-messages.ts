@@ -12,7 +12,7 @@ import {
 } from "../../shared/utils/public-report-display";
 import {
   countPublicReportsByBillId,
-  findBillWithContentById,
+  findInterviewForReport,
   findMessagesBySessionId,
   findReportWithSessionById,
 } from "../repositories/interview-report-repository";
@@ -56,17 +56,17 @@ export async function getReportWithMessages(
     user_id: string;
     started_at: string;
     completed_at: string | null;
-    interview_configs: { bill_id: string } | null;
+    interview_id: string;
   } | null;
 
-  if (!session || !session.interview_configs) {
+  if (!session || !session.interview_id) {
     console.error("Session or config not found for report");
     return null;
   }
 
   // Authorization check: public OR owner
   const isOwner = userId ? isSessionOwner(session.user_id, userId) : false;
-  const billId = session.interview_configs.bill_id;
+  const billId = session.interview_id;
 
   if (!isOwner) {
     const isPublic = canViewReportWithMessages({
@@ -90,9 +90,9 @@ export async function getReportWithMessages(
   }
 
   // Fetch bill info
-  let bill: Awaited<ReturnType<typeof findBillWithContentById>>;
+  let bill: Awaited<ReturnType<typeof findInterviewForReport>>;
   try {
-    bill = await findBillWithContentById(billId);
+    bill = await findInterviewForReport(billId);
   } catch (error) {
     console.error("Failed to fetch bill:", error);
     return null;

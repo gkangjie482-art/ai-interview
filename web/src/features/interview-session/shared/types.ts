@@ -18,11 +18,6 @@ export type InterviewReport =
 export type InterviewReportInsert =
   Database["public"]["Tables"]["interview_report"]["Insert"];
 
-export type InterviewOpinion =
-  Database["public"]["Tables"]["interview_opinion"]["Row"];
-export type InterviewOpinionInsert =
-  Database["public"]["Tables"]["interview_opinion"]["Insert"];
-
 export type InterviewQuestion =
   Database["public"]["Tables"]["interview_questions"]["Row"];
 

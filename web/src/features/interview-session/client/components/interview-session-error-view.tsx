@@ -4,7 +4,7 @@ import { AlertCircle, ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getInterviewLPLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 
 interface InterviewSessionErrorViewProps {
   billId: string;

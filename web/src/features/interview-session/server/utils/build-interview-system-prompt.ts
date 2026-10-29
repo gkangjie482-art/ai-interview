@@ -1,8 +1,8 @@
 import "server-only";
 
-import type { BillWithContent } from "@/features/bills/shared/types";
-import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
-import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
+import type { PromptTopic as BillWithContent } from "@/features/interviews/server/loaders/get-interview";
+import type { getInterviewConfig } from "@/features/interviews/server/loaders/get-interview";
+import type { getInterviewQuestions } from "@/features/interviews/server/loaders/get-interview-questions";
 import { bulkModeLogic } from "./interview-logic/bulk-mode";
 import { loopModeLogic } from "./interview-logic/loop-mode";
 import { targetedModeLogic } from "./interview-logic/targeted-mode";

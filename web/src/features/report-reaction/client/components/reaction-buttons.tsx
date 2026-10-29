@@ -6,7 +6,7 @@ import { Lightbulb, Upload } from "lucide-react";
 import { useState } from "react";
 import type { ReportReactionData } from "../../shared/types";
 import { useReactionToggle } from "../hooks/use-reaction-toggle";
-import { ReportShareModal } from "./report-share-modal";
+import { ReportShareModal } from "@/features/interview-report/client/components/report-share-modal";
 
 interface ReactionButtonsProps {
   reportId: string;

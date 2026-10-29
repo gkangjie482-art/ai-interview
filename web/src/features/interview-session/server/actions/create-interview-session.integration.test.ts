@@ -34,12 +34,12 @@ describe("createInterviewSession 統合テスト", () => {
     billId = bill.id;
 
     const { data: config, error: configError } = await adminClient
-      .from("interview_configs")
-      .insert({
-        bill_id: billId,
+      .from("interviews")
+      .update({
         status: "public",
         name: `テスト設定 ${Date.now()}`,
       })
+      .eq("id", billId)
       .select()
       .single();
     if (configError || !config) {
@@ -60,7 +60,7 @@ describe("createInterviewSession 統合テスト", () => {
     });
 
     expect(session).toBeDefined();
-    expect(session.interview_config_id).toBe(configId);
+    expect(session.interview_id).toBe(configId);
     expect(session.user_id).toBe(testUser.id);
     expect(session.started_at).toBeTruthy();
     expect(session.completed_at).toBeNull();
@@ -75,7 +75,7 @@ describe("createInterviewSession 統合テスト", () => {
 
     expect(dbSession).toBeTruthy();
     expect(dbSession?.user_id).toBe(testUser.id);
-    expect(dbSession?.interview_config_id).toBe(configId);
+    expect(dbSession?.interview_id).toBe(configId);
   });
 
   it("認証失敗時はエラーを throw する", async () => {

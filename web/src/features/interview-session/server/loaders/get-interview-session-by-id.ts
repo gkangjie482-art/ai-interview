@@ -9,6 +9,7 @@ import {
 } from "../utils/verify-session-ownership";
 
 export type InterviewSessionWithBillId = InterviewSession & {
+  /** インタビューID（interview_id と同じ値） */
   bill_id: string;
 };
 
@@ -43,19 +44,9 @@ export async function getInterviewSessionById(
     return null;
   }
 
-  // interview_configsからbill_idを抽出
-  const interviewConfig = session.interview_configs as {
-    bill_id: string;
-  } | null;
-  if (!interviewConfig) {
-    console.error("Interview config not found for session");
-    return null;
-  }
-
-  // セッションデータを返す（bill_idを追加）
-  const { interview_configs: _, ...sessionData } = session;
+  // 呼び出し側の互換のため、インタビューIDを bill_id としても返す
   return {
-    ...sessionData,
-    bill_id: interviewConfig.bill_id,
+    ...session,
+    bill_id: session.interview_id,
   };
 }

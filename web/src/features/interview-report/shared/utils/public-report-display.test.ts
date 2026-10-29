@@ -64,21 +64,15 @@ describe("public report display utilities", () => {
     });
   });
 
-  it("公開レポートのセッションから bill id を取り出す", () => {
+  it("公開レポートのセッションからインタビュー id を取り出す", () => {
     expect(
       getBillIdFromPublicReportSession({
         started_at: "2026-05-06T00:00:00.000Z",
         completed_at: null,
-        interview_configs: { bill_id: "bill-1" },
+        interview_id: "interview-1",
       })
-    ).toBe("bill-1");
-    expect(
-      getBillIdFromPublicReportSession({
-        started_at: "2026-05-06T00:00:00.000Z",
-        completed_at: null,
-        interview_configs: null,
-      })
-    ).toBeNull();
+    ).toBe("interview-1");
+    expect(getBillIdFromPublicReportSession(null)).toBeNull();
   });
 
   it("bill_contents の配列・単体・null を表示用に正規化する", () => {

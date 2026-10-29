@@ -1,13 +1,15 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { NAV_LINKS } from "@/components/layouts/nav-links";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { RubyToggle } from "@/lib/rubyful";
 
 export function HamburgerMenu() {
   return (
@@ -22,8 +24,18 @@ export function HamburgerMenu() {
           <Menu className="h-5 w-5" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-50" align="end">
-        <RubyToggle />
+      <PopoverContent className="w-56 p-2" align="end">
+        <nav aria-label="メインメニュー" className="flex flex-col">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href as Route}
+              className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-mirai-surface"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </PopoverContent>
     </Popover>
   );

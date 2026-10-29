@@ -1,13 +1,13 @@
 import "server-only";
 
 import { Output, generateText, type LanguageModel } from "ai";
-import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
+import { getPromptTopicAdmin as getBillByIdAdmin } from "@/features/interviews/server/loaders/get-interview";
 import {
   isWithinDailyCostLimit,
   recordChatUsage,
 } from "@/features/chat/server/services/cost-tracker";
-import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
-import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
+import { getInterviewConfigAdmin } from "@/features/interviews/server/loaders/get-interview";
+import { getInterviewQuestions } from "@/features/interviews/server/loaders/get-interview-questions";
 import { DEFAULT_INTERVIEW_CHAT_MODEL } from "@/lib/ai/models";
 import { env } from "@/lib/env";
 import { interviewChatTextSchema } from "../../shared/schemas";

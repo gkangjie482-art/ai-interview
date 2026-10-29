@@ -21,7 +21,7 @@ export type PublicReportStanceCountRow = {
 export type PublicReportSessionLike = {
   started_at: string;
   completed_at: string | null;
-  interview_configs: { bill_id: string } | null;
+  interview_id: string;
 } | null;
 
 type BillContentLike = { title: string };
@@ -82,7 +82,7 @@ export function buildPublicReportsPage(
 export function getBillIdFromPublicReportSession(
   session: PublicReportSessionLike
 ) {
-  return session?.interview_configs?.bill_id ?? null;
+  return session?.interview_id ?? null;
 }
 
 export function selectPrimaryBillContent<T extends BillContentLike>(

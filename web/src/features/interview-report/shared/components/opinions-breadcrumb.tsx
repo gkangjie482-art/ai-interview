@@ -1,5 +1,5 @@
 import { Breadcrumb, type BreadcrumbItem } from "@/components/ui/breadcrumb";
-import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 import { routes } from "@/lib/routes";
 
 interface OpinionsBreadcrumbProps {
@@ -9,7 +9,7 @@ interface OpinionsBreadcrumbProps {
 export function OpinionsBreadcrumb({ billId }: OpinionsBreadcrumbProps) {
   const items: BreadcrumbItem[] = [
     { label: "TOP", href: routes.home() },
-    { label: "法案詳細", href: getBillDetailLink(billId) },
+    { label: "法案詳細", href: getInterviewLPLink(billId) },
     { label: "当事者の意見" },
   ];
 

@@ -6,7 +6,7 @@ import {
 } from "../../shared/utils/public-report-display";
 import {
   countPublicReportsByBillId,
-  findBillWithContentById,
+  findInterviewForReport,
   findPublicReportWithSessionById,
 } from "../repositories/interview-report-repository";
 
@@ -34,7 +34,7 @@ export async function getReportOgData(
   const session = report.interview_sessions as {
     started_at: string;
     completed_at: string | null;
-    interview_configs: { bill_id: string } | null;
+    interview_id: string;
   } | null;
 
   let billName = "";
@@ -47,9 +47,9 @@ export async function getReportOgData(
       console.error("Failed to count public reports for OGP:", error);
       return null;
     }
-    let bill: Awaited<ReturnType<typeof findBillWithContentById>>;
+    let bill: Awaited<ReturnType<typeof findInterviewForReport>>;
     try {
-      bill = await findBillWithContentById(billId);
+      bill = await findInterviewForReport(billId);
     } catch (error) {
       console.error("Failed to fetch bill for OGP:", error);
       return null;

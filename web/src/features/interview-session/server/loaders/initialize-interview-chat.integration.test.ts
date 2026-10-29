@@ -64,7 +64,7 @@ describe("initializeInterviewChat 統合テスト", () => {
     });
 
     expect(result.session.id).toBe(sessionId);
-    expect(result.session.interview_config_id).toBe(interviewConfigId);
+    expect(result.session.interview_id).toBe(interviewConfigId);
     expect(result.messages).toHaveLength(2);
     expect(result.messages[0].interview_session_id).toBe(sessionId);
   });
@@ -85,7 +85,7 @@ describe("initializeInterviewChat 統合テスト", () => {
 
     // 新しいセッションが作成されていること
     expect(result.session.id).not.toBe(sessionId);
-    expect(result.session.interview_config_id).toBe(interviewConfigId);
+    expect(result.session.interview_id).toBe(interviewConfigId);
     expect(result.session.user_id).toBe(testUser.id);
     // MockModelが生成した初期質問メッセージが含まれること
     expect(result.messages).toHaveLength(1);

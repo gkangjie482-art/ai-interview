@@ -15,8 +15,20 @@ export type FooterPolicyLink = {
 
 export const primaryLinks: FooterLink[] = [
   {
-    label: "TOP",
+    label: "インタビュー一覧",
     href: routes.home(),
+  },
+  {
+    label: "はじめての方へ",
+    href: routes.guide(),
+  },
+  {
+    label: "このサービスについて",
+    href: routes.about(),
+  },
+  {
+    label: "回答履歴",
+    href: routes.history(),
   },
   {
     label: "ソースコード",
@@ -38,9 +50,5 @@ export const policyLinks: FooterPolicyLink[] = [
   {
     label: "プライバシーポリシー",
     href: routes.privacy(),
-  },
-  {
-    label: "開発者向け",
-    href: routes.developers(),
   },
 ];

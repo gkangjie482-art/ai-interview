@@ -21,21 +21,6 @@ export const previewRegistry: PreviewGroup[] = [
     ],
   },
   {
-    name: "Bills",
-    items: [
-      {
-        path: "/dev/features/bills/bill-card",
-        label: "BillCard",
-        description: "法案カードコンポーネント",
-      },
-      {
-        path: "/dev/features/bills/bill-status-badge",
-        label: "BillStatusBadge",
-        description: "法案ステータスバッジ全バリアント",
-      },
-    ],
-  },
-  {
     name: "Interview",
     items: [
       {

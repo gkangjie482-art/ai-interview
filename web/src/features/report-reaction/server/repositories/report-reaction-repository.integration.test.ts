@@ -12,12 +12,12 @@ import { getReportPublicStatus } from "./report-reaction-repository";
 
 async function createTestInterviewConfig(billId: string) {
   const { data, error } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: billId,
+    .from("interviews")
+    .update({
       status: "public",
       name: `リアクション公開判定テスト ${Date.now()}`,
     })
+    .eq("id", billId)
     .select()
     .single();
   if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -28,7 +28,7 @@ async function createTestSession(configId: string, userId: string) {
   const { data, error } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: configId,
+      interview_id: configId,
       user_id: userId,
       started_at: new Date().toISOString(),
     })

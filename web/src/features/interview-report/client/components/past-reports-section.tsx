@@ -1,4 +1,4 @@
-import { getInterviewReportCompleteLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewReportCompleteLink } from "@/features/interviews/shared/utils/interview-links";
 import type { ReportCardData } from "../../shared/components/report-card";
 import { ReportCard } from "../../shared/components/report-card";
 

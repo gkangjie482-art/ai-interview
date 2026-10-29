@@ -1,11 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import {
-  DIFFICULTY_COOKIE_NAME,
-  DIFFICULTY_COOKIE_OPTIONS,
-  type DifficultyLevelEnum,
-} from "./features/bill-difficulty/shared/types";
-import { isDifficultyLevel } from "./features/bill-difficulty/shared/utils/is-difficulty-level";
-import {
   createUnauthorizedResponse,
   getBasicAuthConfig,
   validateBasicAuth,
@@ -33,9 +27,6 @@ export async function middleware(request: NextRequest) {
   // Supabaseセッションをリフレッシュ（トークン期限切れ時に自動更新）
   const response = await updateSupabaseSession(request);
 
-  // URLパラメータからdifficulty Cookieをセット
-  _applyDifficultyCookie(request, response);
-
   const authConfig = getBasicAuthConfig();
 
   // Basic認証の設定がない場合はスキップ
@@ -52,45 +43,6 @@ export async function middleware(request: NextRequest) {
   }
 
   return createUnauthorizedResponse();
-}
-
-/**
- * 有効な難易度レベルかチェック
- */
-export function isValidDifficultyLevel(
-  value: string | null
-): value is DifficultyLevelEnum {
-  return isDifficultyLevel(value);
-}
-
-/**
- * difficulty Cookie の付与対象パスか判定する。
- * オープンデータAPI等も difficulty クエリを受け取るため、APIレスポンスに
- * Set-Cookie が乗ってUIの表示設定を書き換えてしまわないよう除外する
- */
-export function shouldApplyDifficultyCookie(pathname: string): boolean {
-  return !pathname.startsWith("/api/");
-}
-
-/**
- * URLパラメータからdifficultyを取得し、レスポンスのCookieにセット
- */
-function _applyDifficultyCookie(
-  request: NextRequest,
-  response: NextResponse
-): void {
-  if (!shouldApplyDifficultyCookie(request.nextUrl.pathname)) return;
-
-  const { searchParams } = new URL(request.url);
-  const difficulty = searchParams.get("difficulty");
-
-  if (isValidDifficultyLevel(difficulty)) {
-    response.cookies.set(
-      DIFFICULTY_COOKIE_NAME,
-      difficulty,
-      DIFFICULTY_COOKIE_OPTIONS
-    );
-  }
 }
 
 export function isHtmlAcceptHeader(accept: string): boolean {

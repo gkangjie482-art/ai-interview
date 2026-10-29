@@ -1,7 +1,7 @@
 import { Undo2 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 import { routes } from "@/lib/routes";
 
 interface BackToBillButtonProps {
@@ -13,8 +13,8 @@ interface BackToBillButtonProps {
 export function BackToBillButton({ billId, from }: BackToBillButtonProps) {
   const href =
     from === "opinions"
-      ? routes.billOpinions(billId)
-      : getBillDetailLink(billId);
+      ? routes.interviewSessions(billId)
+      : getInterviewLPLink(billId);
   const label = from === "opinions" ? "レポート一覧に戻る" : "法案の記事に戻る";
 
   return (

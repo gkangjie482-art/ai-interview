@@ -7,20 +7,20 @@ import {
   Output,
   streamText,
 } from "ai";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
-import { validatePreviewToken } from "@/features/bills/server/loaders/validate-preview-token";
-import type { BillWithContent } from "@/features/bills/shared/types";
+import { getPromptTopic as getBillById } from "@/features/interviews/server/loaders/get-interview";
+import { getPromptTopicAdmin as getBillByIdAdmin } from "@/features/interviews/server/loaders/get-interview";
+import { validatePreviewToken } from "@/features/interviews/server/loaders/get-interview";
+import type { PromptTopic as BillWithContent } from "@/features/interviews/server/loaders/get-interview";
 import {
   isWithinDailyCostLimit,
   recordChatUsage,
 } from "@/features/chat/server/services/cost-tracker";
 import { ChatError, ChatErrorCode } from "@/features/chat/shared/types/errors";
-import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import { getInterviewConfig } from "@/features/interviews/server/loaders/get-interview";
 import { resolveInterviewChatLoaders } from "@/features/interview-session/shared/utils/resolve-interview-chat-loaders";
-import type { InterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config-admin";
-import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
-import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
+import type { InterviewConfig } from "@/features/interviews/server/loaders/get-interview";
+import { getInterviewConfigAdmin } from "@/features/interviews/server/loaders/get-interview";
+import { getInterviewQuestions } from "@/features/interviews/server/loaders/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getInterviewSession } from "@/features/interview-session/server/loaders/get-interview-session";

@@ -8,7 +8,7 @@ import {
 } from "@test-utils/utils";
 import { convertArrayToReadableStream, MockLanguageModelV3 } from "ai/test";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { InterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config-admin";
+import type { InterviewConfig } from "@/features/interviews/server/loaders/get-interview";
 import { createStreamMock } from "@/test-utils/mock-language-model";
 import type { InterviewSession } from "../../shared/types";
 import { findInterviewMessagesBySessionId } from "../repositories/interview-session-repository";

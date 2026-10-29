@@ -50,7 +50,7 @@ describe("getInterviewSessionById 統合テスト", () => {
     expect(session?.id).toBe(sessionId);
     expect(session?.user_id).toBe(testUser.id);
     expect(session?.bill_id).toBe(billId);
-    expect(session?.interview_config_id).toBe(interviewConfigId);
+    expect(session?.interview_id).toBe(interviewConfigId);
   });
 
   it("未認証の場合はnullを返す", async () => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { getInterviewReportCompleteLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewReportCompleteLink } from "@/features/interviews/shared/utils/interview-links";
 import { callCompleteApi } from "../utils/interview-api-client";
 
 interface UseInterviewCompletionProps {

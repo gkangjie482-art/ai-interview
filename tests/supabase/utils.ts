@@ -81,103 +81,62 @@ export async function cleanupTestUser(userId: string): Promise<void> {
 }
 
 // ── テストデータ作成ヘルパー ──
-/** テスト用 diet_session を作成 */
-export async function createTestDietSession(
-  overrides: Partial<{
-    name: string;
-    start_date: string;
-    end_date: string;
-    slug: string | null;
-    is_active: boolean;
-  }> = {}
-) {
-  const defaults = {
-    name: `テスト会期 ${Date.now()}`,
-    start_date: "2025-01-01",
-    end_date: "2025-06-30",
-    slug: `test-session-${Date.now()}`,
-    is_active: false,
-    ...overrides,
-  };
-  const { data, error } = await adminClient
-    .from("diet_sessions")
-    .insert(defaults)
-    .select()
-    .single();
-  if (error) throw new Error(`diet_session 作成失敗: ${error.message}`);
-  return data;
-}
-
-/** テスト用 diet_session を削除 */
-export async function cleanupTestDietSession(sessionId: string): Promise<void> {
-  await adminClient.from("diet_sessions").delete().eq("id", sessionId);
-}
-
-/** テスト用 bill を作成 */
+/**
+ * テスト用インタビューを作成（既定は下書き・募集中）。
+ * 旧スキーマの bills と interview_configs を統合したもの。関数名は既存テストとの互換のため据え置き。
+ */
 export async function createTestBill(
   overrides: Partial<{
     name: string;
-    originating_house: "HR" | "HC";
-    status:
-      | "introduced"
-      | "in_originating_house"
-      | "in_receiving_house"
-      | "enacted"
-      | "rejected"
-      | "preparing";
-    publish_status: "draft" | "published" | "coming_soon";
-    diet_session_id: string;
+    slug: string;
+    publish_status: "draft" | "published";
+    status: "public" | "closed";
     is_featured: boolean;
-    submitted_date: string;
-    shugiin_url: string;
-    article_kind: "standard" | "ai_generated";
-    is_review_completed: boolean;
+    mode: "loop" | "bulk" | "targeted";
+    summary: string;
+    description: string;
+    background: string;
+    themes: string[];
+    estimated_duration: number;
+    deleted_at: string | null;
   }> = {}
 ) {
+  const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const defaults = {
-    name: `テスト議案 ${Date.now()}`,
-    originating_house: "HR" as const,
-    status: "introduced" as const,
+    name: `テストインタビュー ${unique}`,
+    slug: `test-${unique}`,
     publish_status: "draft" as const,
+    status: "public" as const,
     ...overrides,
   };
   const { data, error } = await adminClient
-    .from("bills")
+    .from("interviews")
     .insert(defaults)
     .select()
     .single();
-  if (error) throw new Error(`bill 作成失敗: ${error.message}`);
+  if (error) throw new Error(`interview 作成失敗: ${error.message}`);
   return data;
 }
 
-/** テスト用 bill を削除（CASCADE で関連データも削除） */
+/** テスト用インタビューを作成（createTestBill の別名） */
+export const createTestInterview = createTestBill;
+
+/** テスト用インタビューを削除（CASCADE で関連データも削除） */
 export async function cleanupTestBill(billId: string): Promise<void> {
-  await adminClient.from("bills").delete().eq("id", billId);
+  await adminClient.from("interviews").delete().eq("id", billId);
 }
 
 /**
  * テスト用インタビューデータを一括作成
- * bill → interview_config → interview_session の階層
+ * interview → interview_session の階層。bill と config は同じインタビュー行を指す。
  */
 export async function createTestInterviewData(userId: string) {
-  const bill = await createTestBill();
-
-  const { data: config, error: configError } = await adminClient
-    .from("interview_configs")
-    .insert({
-      bill_id: bill.id,
-      status: "public",
-      name: `テスト設定 ${Date.now()}`,
-    })
-    .select()
-    .single();
-  if (configError || !config)
-    throw new Error(`interview_config 作成失敗: ${configError?.message}`);
+  const interview = await createTestBill({ publish_status: "published" });
 
   const { data: session, error: sessionError } = await adminClient
     .from("interview_sessions")
     .insert({
-      interview_config_id: config.id,
+      interview_id: interview.id,
       user_id: userId,
       started_at: new Date().toISOString(),
     })
@@ -186,96 +145,7 @@ export async function createTestInterviewData(userId: string) {
   if (sessionError || !session)
     throw new Error(`interview_session 作成失敗: ${sessionError?.message}`);
 
-  return { bill, config, session };
-}
-
-/** テスト用 bill_contents を作成 */
-export async function createTestBillContent(
-  billId: string,
-  overrides: Partial<{
-    difficulty_level: "normal" | "hard";
-    title: string;
-    summary: string;
-    content: string;
-  }> = {}
-) {
-  const defaults = {
-    bill_id: billId,
-    difficulty_level: "normal" as const,
-    title: `テスト議案タイトル ${Date.now()}`,
-    summary: `テスト議案サマリー ${Date.now()}`,
-    content: `# テスト議案コンテンツ ${Date.now()}`,
-    ...overrides,
-  };
-  const { data, error } = await adminClient
-    .from("bill_contents")
-    .insert(defaults)
-    .select()
-    .single();
-  if (error) throw new Error(`bill_contents 作成失敗: ${error.message}`);
-  return data;
-}
-
-/** テスト用 tag を作成 */
-export async function createTestTag(
-  overrides: Partial<{
-    label: string;
-    description: string;
-    featured_priority: number;
-  }> = {}
-) {
-  const defaults = {
-    label: `テストタグ-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    ...overrides,
-  };
-  const { data, error } = await adminClient
-    .from("tags")
-    .insert(defaults)
-    .select()
-    .single();
-  if (error) throw new Error(`tag 作成失敗: ${error.message}`);
-  return data;
-}
-
-/** テスト用 tag を削除 */
-export async function cleanupTestTag(tagId: string): Promise<void> {
-  await adminClient.from("tags").delete().eq("id", tagId);
-}
-
-/** テスト用 bills_tags を作成 */
-export async function createTestBillTag(billId: string, tagId: string) {
-  const { data, error } = await adminClient
-    .from("bills_tags")
-    .insert({ bill_id: billId, tag_id: tagId })
-    .select()
-    .single();
-  if (error) throw new Error(`bills_tags 作成失敗: ${error.message}`);
-  return data;
-}
-
-/** テスト用 mirai_stances を作成 */
-export async function createTestMiraiStance(
-  billId: string,
-  overrides: Partial<{
-    type: "for" | "against" | "neutral";
-    comment: string;
-    is_published: boolean;
-    publish_at: string | null;
-  }> = {}
-) {
-  const defaults = {
-    bill_id: billId,
-    type: "for" as const,
-    comment: "テストコメント",
-    ...overrides,
-  };
-  const { data, error } = await adminClient
-    .from("mirai_stances")
-    .insert(defaults)
-    .select()
-    .single();
-  if (error) throw new Error(`mirai_stances 作成失敗: ${error.message}`);
-  return data;
+  return { bill: interview, config: interview, session };
 }
 
 /** テスト用 preview_tokens を作成 */
@@ -287,7 +157,7 @@ export async function createTestPreviewToken(
   }> = {}
 ) {
   const defaults = {
-    bill_id: billId,
+    interview_id: billId,
     token: `test-token-${Date.now()}`,
     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     ...overrides,

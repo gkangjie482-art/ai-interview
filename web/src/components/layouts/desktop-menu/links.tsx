@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { EXTERNAL_LINKS } from "@/config/external-links";
 import { routes } from "@/lib/routes";
+import { NAV_LINKS } from "../nav-links";
 
 type FooterLinkItem = {
   label: string;
@@ -10,6 +11,7 @@ type FooterLinkItem = {
 };
 
 const links: FooterLinkItem[] = [
+  ...NAV_LINKS,
   {
     label: "利用規約",
     href: routes.terms(),

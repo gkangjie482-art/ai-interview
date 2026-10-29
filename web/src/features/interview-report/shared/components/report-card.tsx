@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getPublicReportLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getPublicReportLink } from "@/features/interviews/shared/utils/interview-links";
 import { cn } from "@/lib/utils";
 import {
   type InterviewReportRole,

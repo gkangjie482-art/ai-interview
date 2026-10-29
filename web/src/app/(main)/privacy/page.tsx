@@ -72,24 +72,6 @@ export default function PrivacyPage() {
                 ),
               },
               {
-                id: "open-data",
-                content: (
-                  <>
-                    <span className="font-semibold text-slate-800">
-                      第三者への提供（オープンデータ公開）：
-                    </span>
-                    インタビューデータを、別途定める「
-                    <Link
-                      href={routes.interviewDataTerms()}
-                      className="text-primary-accent underline"
-                    >
-                      AIインタビューデータ利用規約
-                    </Link>
-                    」に同意する者であれば誰でもダウンロード可能なオープンデータとして第三者に提供することがあります。
-                  </>
-                ),
-              },
-              {
                 id: "statistics",
                 content: (
                   <>
@@ -111,7 +93,7 @@ export default function PrivacyPage() {
           </LegalParagraph>
           <LegalList
             items={[
-              "「2. 個人情報の収集方法と使用範囲」に定めるAIインタビュー機能を通じて運営者が取得した回答内容を、本人が公開に同意した範囲で公開する場合、および別途定める「AIインタビューデータ利用規約」に同意する者であれば誰でもダウンロード可能なオープンデータとして第三者に提供する場合",
+              "「2. 個人情報の収集方法と使用範囲」に定めるAIインタビュー機能を通じて運営者が取得した回答内容を、本人が公開に同意した範囲で公開する場合",
               "ユーザー本人の同意がある場合",
               "統計的なデータなど、個人を特定できない状態で提供する場合",
               "法令に基づく開示請求（裁判所・警察等）があった場合",
@@ -138,7 +120,7 @@ export default function PrivacyPage() {
         <section className="space-y-4">
           <LegalSectionTitle>6. 保管期間と廃棄</LegalSectionTitle>
           <LegalParagraph>
-            取得した個人情報および対話ログは、利用目的の達成に必要な期間保管した後、適切な方法で廃棄・削除します。なお、本人の同意に基づき公開された回答内容、および個人を特定できないよう加工した上でオープンデータとして提供されたデータなど運営者が管理していない情報は、廃棄・削除を行うことはできないため、継続して公開・提供されることがあります。
+            取得した個人情報および対話ログは、利用目的の達成に必要な期間保管した後、適切な方法で廃棄・削除します。なお、本人の同意に基づき公開された回答内容など運営者の管理を離れた情報は、廃棄・削除を行うことはできないため、継続して公開・提供されることがあります。
           </LegalParagraph>
         </section>
 

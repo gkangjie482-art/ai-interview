@@ -1,50 +1,23 @@
+import type { PromptTopic } from "@/features/interviews/server/loaders/get-interview";
 import { describe, expect, it } from "vitest";
-import {
-  BILL_STATUS_ORDER,
-  type BillWithContent,
-} from "@/features/bills/shared/types";
 import {
   buildTargetedModeSystemPrompt,
   calculateTargetedModeNextQuestionId,
 } from "./targeted-mode";
 import type { InterviewPromptInput } from "./types";
 
+type BillWithContent = NonNullable<PromptTopic>;
+
 const makeBill = (
   overrides: Partial<BillWithContent> = {}
 ): BillWithContent => ({
-  id: "bill-1",
   name: "テスト法案",
-  is_featured: false,
-  is_review_completed: true,
-  article_kind: "standard",
-  originating_house: "HR",
-  shugiin_url: null,
-  slug: null,
-  diet_session_id: null,
-  publish_status: "published",
-  published_at: null,
-  submitted_date: null,
-  share_thumbnail_url: null,
-  status: "introduced",
-  status_note: null,
-  status_order: BILL_STATUS_ORDER.introduced,
-  publish_status_order: 2,
-  thumbnail_url: null,
   knowledge_source: "厚生労働省の報告書",
-  use_knowledge_source_in_chat: false,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
   bill_content: {
-    id: "bc-1",
-    bill_id: "bill-1",
     title: "テスト法案タイトル",
     summary: "テスト法案の要約です",
     content: "テスト法案の内容",
-    difficulty_level: "normal",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
   },
-  tags: [],
   ...overrides,
 });
 

@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getInterviewChatLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewChatLink } from "@/features/interviews/shared/utils/interview-links";
 import { archiveInterviewSession } from "../../server/actions/archive-interview-session";
 
 export function useArchiveAndNavigate(

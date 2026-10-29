@@ -43,7 +43,7 @@ export async function getInterviewReportById(
     user_id: string;
     started_at: string;
     completed_at: string | null;
-    interview_configs: { bill_id: string } | null;
+    interview_id: string;
   } | null;
 
   if (!session) {
@@ -62,8 +62,8 @@ export async function getInterviewReportById(
     return null;
   }
 
-  // interview_configsからbill_idを取得
-  if (!session.interview_configs) {
+  // セッションからインタビューIDを取得
+  if (!session.interview_id) {
     console.error("Interview config not found for session");
     return null;
   }
@@ -72,7 +72,7 @@ export async function getInterviewReportById(
   const { interview_sessions: _, ...reportData } = report;
   return {
     ...reportData,
-    bill_id: session.interview_configs.bill_id,
+    bill_id: session.interview_id,
     session_started_at: session.started_at,
     session_completed_at: session.completed_at,
   };

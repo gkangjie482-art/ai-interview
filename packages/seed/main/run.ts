@@ -225,7 +225,7 @@ async function seedDatabase() {
 
     if (interviewConfigData) {
       const { data: insertedConfig, error: configError } = await supabase
-        .from("interview_configs")
+        .from("interviews")
         .insert(interviewConfigData)
         .select("id")
         .single();
@@ -422,7 +422,7 @@ async function seedDatabase() {
     if (shippingConfig) {
       const { data: insertedShippingConfig, error: shippingConfigError } =
         await supabase
-          .from("interview_configs")
+          .from("interviews")
           .insert(shippingConfig)
           .select("id")
           .single();

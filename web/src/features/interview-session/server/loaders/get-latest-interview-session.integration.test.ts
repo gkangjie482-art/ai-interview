@@ -107,7 +107,7 @@ describe("getLatestInterviewSession 統合テスト", () => {
     const { data: newSession } = await adminClient
       .from("interview_sessions")
       .insert({
-        interview_config_id: interviewConfigId,
+        interview_id: interviewConfigId,
         user_id: testUser.id,
         started_at: new Date().toISOString(),
       })

@@ -291,14 +291,14 @@ export function createInterviewQuestions(
 ): Omit<InterviewQuestionInsert, "id" | "created_at" | "updated_at">[] {
   return [
     {
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       question: "この法案に賛成ですか？反対ですか？",
       follow_up_guide: "ユーザーの立場を明確にしてください。",
       quick_replies: ["賛成", "反対", "どちらでもない"],
       question_order: 1,
     },
     {
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       question: "その理由を教えてください。",
       follow_up_guide: "具体的な理由を引き出してください。",
       quick_replies: null,
@@ -323,7 +323,7 @@ export function createInterviewSessions(
 
     // パターン1: 完了 + レポートあり（賛成）
     sessions.push({
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 1).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 3600000).toISOString(),
       completed_at: new Date(
@@ -333,7 +333,7 @@ export function createInterviewSessions(
 
     // パターン2: 完了 + レポートあり（反対）
     sessions.push({
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 2).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 7200000).toISOString(),
       completed_at: new Date(
@@ -343,7 +343,7 @@ export function createInterviewSessions(
 
     // パターン3: 完了 + レポートあり（中立）
     sessions.push({
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 3).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 10800000).toISOString(),
       completed_at: new Date(
@@ -353,7 +353,7 @@ export function createInterviewSessions(
 
     // パターン4: 完了したけどレポート未作成
     sessions.push({
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 4).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 14400000).toISOString(),
       completed_at: new Date(
@@ -363,7 +363,7 @@ export function createInterviewSessions(
 
     // パターン5: 進行中（未完了、レポートなし）
     sessions.push({
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 5).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 1800000).toISOString(),
       completed_at: null,
@@ -512,7 +512,7 @@ export function createDemoSession(
   const now = new Date();
   return {
     id: DEMO_SESSION_ID,
-    interview_config_id: interviewConfigId,
+    interview_id: interviewConfigId,
     user_id: "00000000-0000-0000-0000-000000000000",
     started_at: new Date(now.getTime() - 3600000).toISOString(),
     completed_at: new Date(now.getTime() - 3000000).toISOString(),
@@ -588,21 +588,21 @@ export function createAdditionalDemoSessions(
   return [
     {
       id: DEMO_SESSION_ID_WORK,
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: "00000000-0000-0000-0000-000000000010",
       started_at: new Date(now.getTime() - 7200000).toISOString(),
       completed_at: new Date(now.getTime() - 6600000).toISOString(),
     },
     {
       id: DEMO_SESSION_ID_DAILY,
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: "00000000-0000-0000-0000-000000000011",
       started_at: new Date(now.getTime() - 10800000).toISOString(),
       completed_at: new Date(now.getTime() - 10200000).toISOString(),
     },
     {
       id: DEMO_SESSION_ID_CITIZEN,
-      interview_config_id: interviewConfigId,
+      interview_id: interviewConfigId,
       user_id: "00000000-0000-0000-0000-000000000012",
       started_at: new Date(now.getTime() - 14400000).toISOString(),
       completed_at: new Date(now.getTime() - 10200000).toISOString(),

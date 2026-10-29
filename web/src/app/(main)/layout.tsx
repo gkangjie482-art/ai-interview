@@ -6,7 +6,6 @@ import { AuthGate } from "@/components/layouts/auth-gate";
 import { Footer } from "@/components/layouts/footer/footer";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { env } from "@/lib/env";
-import { RubyfulInitializer } from "@/lib/rubyful";
 
 export default function MainGroupLayout({
   children,
@@ -17,7 +16,6 @@ export default function MainGroupLayout({
     <>
       <SpeedInsights />
       <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
-      <RubyfulInitializer />
       <AuthGate />
 
       <MainLayout>

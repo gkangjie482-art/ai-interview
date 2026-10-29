@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { InterviewConsentModal } from "@/features/interview-config/client/components/interview-consent-modal";
+import { InterviewConsentModal } from "@/features/interviews/client/components/interview-consent-modal";
 import { ComponentShowcase } from "../../../_components/component-showcase";
 import { PreviewSection } from "../../../_components/preview-section";
 

@@ -1,44 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isDevRoute,
-  isHtmlAcceptHeader,
-  isValidDifficultyLevel,
-  shouldApplyDifficultyCookie,
-} from "./middleware";
-
-describe("shouldApplyDifficultyCookie", () => {
-  it("通常のページパスではtrueを返す", () => {
-    expect(shouldApplyDifficultyCookie("/")).toBe(true);
-    expect(shouldApplyDifficultyCookie("/bills/abc")).toBe(true);
-  });
-
-  it("APIパスではfalseを返す（レスポンスにSet-Cookieを乗せない）", () => {
-    expect(shouldApplyDifficultyCookie("/api/open-data/bills")).toBe(false);
-    expect(shouldApplyDifficultyCookie("/api/chat")).toBe(false);
-  });
-});
-
-describe("isValidDifficultyLevel", () => {
-  it("should return true for 'normal'", () => {
-    expect(isValidDifficultyLevel("normal")).toBe(true);
-  });
-
-  it("should return true for 'hard'", () => {
-    expect(isValidDifficultyLevel("hard")).toBe(true);
-  });
-
-  it("should return false for invalid value", () => {
-    expect(isValidDifficultyLevel("easy")).toBe(false);
-  });
-
-  it("should return false for empty string", () => {
-    expect(isValidDifficultyLevel("")).toBe(false);
-  });
-
-  it("should return false for null", () => {
-    expect(isValidDifficultyLevel(null)).toBe(false);
-  });
-});
+import { isDevRoute, isHtmlAcceptHeader } from "./middleware";
 
 describe("isHtmlAcceptHeader", () => {
   it("should return true for text/html", () => {

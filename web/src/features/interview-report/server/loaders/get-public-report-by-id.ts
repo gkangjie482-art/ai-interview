@@ -10,7 +10,7 @@ import {
 } from "../../shared/utils/public-report-display";
 import {
   countPublicReportsByBillId,
-  findBillWithContentById,
+  findInterviewForReport,
   findMessagesBySessionId,
   findPublicReportWithSessionById,
 } from "../repositories/interview-report-repository";
@@ -47,7 +47,7 @@ export const getPublicReportById = cache(
     const session = report.interview_sessions as {
       started_at: string;
       completed_at: string | null;
-      interview_configs: { bill_id: string } | null;
+      interview_id: string;
     } | null;
 
     if (!session) {
@@ -67,7 +67,7 @@ export const getPublicReportById = cache(
       return null;
     }
     const [bill, messages] = await Promise.all([
-      findBillWithContentById(billId),
+      findInterviewForReport(billId),
       findMessagesBySessionId(report.interview_session_id),
     ]);
 

@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { getInterviewMessageLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewMessageLink } from "@/features/interviews/shared/utils/interview-links";
 import type { ParsedOpinion as Opinion } from "../utils/format-utils";
 
 export type { Opinion };

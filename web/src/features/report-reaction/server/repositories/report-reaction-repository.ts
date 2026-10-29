@@ -16,7 +16,7 @@ export async function getReportPublicStatus(
   const { data, error } = await supabase
     .from("interview_report")
     .select(
-      "is_public_by_admin, is_public_by_user, interview_sessions!inner(interview_configs!inner(bill_id))"
+      "is_public_by_admin, is_public_by_user, interview_sessions!inner(interview_id)"
     )
     .eq("id", reportId)
     .single();
@@ -25,10 +25,7 @@ export async function getReportPublicStatus(
     return false;
   }
 
-  const session = data.interview_sessions as {
-    interview_configs: { bill_id: string } | null;
-  } | null;
-  const billId = session?.interview_configs?.bill_id;
+  const billId = data.interview_sessions?.interview_id;
   if (!billId) {
     return false;
   }

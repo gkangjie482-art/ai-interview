@@ -48,7 +48,7 @@ describe("getInterviewSession 統合テスト", () => {
 
     expect(session).not.toBeNull();
     expect(session?.id).toBe(sessionId);
-    expect(session?.interview_config_id).toBe(interviewConfigId);
+    expect(session?.interview_id).toBe(interviewConfigId);
     expect(session?.user_id).toBe(testUser.id);
     expect(session?.completed_at).toBeNull();
     expect(session?.archived_at).toBeNull();
@@ -98,7 +98,7 @@ describe("getInterviewSession 統合テスト", () => {
     const { data: completedSession } = await adminClient
       .from("interview_sessions")
       .insert({
-        interview_config_id: interviewConfigId,
+        interview_id: interviewConfigId,
         user_id: testUser.id,
         completed_at: new Date().toISOString(),
       })
@@ -127,7 +127,7 @@ describe("getInterviewSession 統合テスト", () => {
     const { data: activeSession } = await adminClient
       .from("interview_sessions")
       .insert({
-        interview_config_id: interviewConfigId,
+        interview_id: interviewConfigId,
         user_id: testUser.id,
       })
       .select("id")

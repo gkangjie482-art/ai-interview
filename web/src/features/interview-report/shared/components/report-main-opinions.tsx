@@ -1,7 +1,7 @@
 import { ArrowDown } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import { getInterviewMessageLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewMessageLink } from "@/features/interviews/shared/utils/interview-links";
 import type { ParsedOpinion } from "../utils/format-utils";
 
 interface ReportMainOpinionsProps {

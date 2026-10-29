@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { getInterviewLPLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 import { extractBillIdFromPath } from "@/lib/page-layout-utils";
 import { routes } from "@/lib/routes";
 

@@ -1,36 +1,19 @@
 /**
  * ページレイアウトに関するユーティリティ
- *
- * TOP・法案一覧・法案詳細を「メインページ」として扱い、
- * - DifficultySelectorを表示
- * - チャットサイドバー用のオフセットレイアウトを使用
  */
 
-/** メインページ（TOP、法案一覧、法案詳細）かどうかを判定 */
-export function isMainPage(pathname: string): boolean {
-  // トップページ
-  if (pathname === "/") return true;
-  // 法案一覧ページ
-  if (pathname === "/bills") return true;
-  // 法案詳細ページ（/bills/[id]）- サブパスは除外
-  if (/\/bills\/[^/]+$/.test(pathname)) return true;
-  return false;
-}
-
-/** インタビューチャットページかどうかを判定 */
+/** インタビューチャットページかどうかを判定（/interview/[slug]/chat, /preview/interview/[slug]/chat） */
 export function isInterviewPage(pathname: string): boolean {
-  // /bills/[id]/interview/chat
-  return /\/bills\/[^/]+\/interview\/chat$/.test(pathname);
+  return /\/interview\/[^/]+\/chat$/.test(pathname);
 }
 
-/** インタビューセクション（LP・チャット含む）かどうかを判定 */
+/** インタビューセクション（紹介ページ・チャット含む）かどうかを判定 */
 export function isInterviewSection(pathname: string): boolean {
-  // /bills/[id]/interview 以下すべて
-  return /\/bills\/[^/]+\/interview(\/|$)/.test(pathname);
+  return /\/interview\/[^/]+(\/|$)/.test(pathname);
 }
 
-/** インタビューページからbillIdを抽出 */
+/** インタビューページの URL からインタビューの slug（または id）を取り出す */
 export function extractBillIdFromPath(pathname: string): string | null {
-  const match = pathname.match(/\/bills\/([^/]+)/);
+  const match = pathname.match(/\/interview\/([^/]+)/);
   return match ? match[1] : null;
 }

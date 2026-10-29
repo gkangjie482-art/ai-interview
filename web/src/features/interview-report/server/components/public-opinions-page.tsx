@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layouts/container";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { InterviewLandingSection } from "@/features/interview-config/client/components/interview-landing-section";
-import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import { InterviewLandingSection } from "@/features/interviews/client/components/interview-landing-section";
+import { getInterview } from "@/features/interviews/server/loaders/get-interview";
 import { getReportReactionsBatch } from "@/features/report-reaction/server/loaders/get-report-reactions";
 import { routes } from "@/lib/routes";
 import { PublicOpinionsList } from "../../client/components/public-opinions-list";
@@ -22,21 +21,23 @@ interface PublicOpinionsPageProps {
 }
 
 export async function PublicOpinionsPage({
-  billId,
+  billId: interviewKey,
   initialFilter,
   initialSort,
 }: PublicOpinionsPageProps) {
-  const [bill, initialData, interviewConfig] = await Promise.all([
-    getBillById(billId),
-    getInitialPublicReportsByBillId(billId, initialFilter, initialSort),
-    getInterviewConfig(billId),
-  ]);
+  const bill = await getInterview(interviewKey);
 
   if (!bill) {
     notFound();
   }
 
-  const billTitle = bill.bill_content?.title || bill.name;
+  const billId = bill.id;
+  const billTitle = bill.name;
+  const initialData = await getInitialPublicReportsByBillId(
+    billId,
+    initialFilter,
+    initialSort
+  );
 
   const reportIds = initialData.reports.map((r) => r.id);
   const reactionsMap = await getReportReactionsBatch(reportIds);
@@ -66,18 +67,16 @@ export async function PublicOpinionsPage({
       )}
 
       <Container>
-        {/* 法案タイトル（法案詳細へのリンク） */}
+        {/* インタビューのタイトル（紹介ページへのリンク） */}
         <div className="py-6">
-          <Link href={routes.billDetail(billId)}>
+          <p className="text-sm font-bold text-primary-accent">
+            公開された会話
+          </p>
+          <Link href={routes.interviewLP(bill.slug)}>
             <h1 className="text-2xl font-bold leading-[1.5] text-black hover:underline">
               {billTitle}
             </h1>
           </Link>
-          {bill.name !== billTitle && (
-            <p className="mt-2 text-xs font-medium leading-[1.67] text-mirai-text-muted">
-              {bill.name}
-            </p>
-          )}
         </div>
 
         {/* 意見一覧（フィルター付き・スクロールページネーション） */}
@@ -92,7 +91,7 @@ export async function PublicOpinionsPage({
         />
 
         {/* AIインタビューCTAバナー */}
-        {interviewConfig != null && (
+        {bill.status === "public" && (
           <div className="my-8">
             <InterviewLandingSection billId={billId} />
           </div>

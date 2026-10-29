@@ -23,7 +23,7 @@ describe("useEndInterview", () => {
     mockPush.mockReset();
   });
 
-  it("セッションをアーカイブしてから法案詳細へ遷移する", async () => {
+  it("セッションをアーカイブしてからインタビュー紹介ページへ遷移する", async () => {
     mockArchive.mockResolvedValue({ success: true });
 
     const { result } = renderHook(() => useEndInterview("session-1", "bill-1"));
@@ -33,14 +33,14 @@ describe("useEndInterview", () => {
     });
 
     expect(mockArchive).toHaveBeenCalledWith("session-1");
-    expect(mockPush).toHaveBeenCalledWith("/bills/bill-1");
+    expect(mockPush).toHaveBeenCalledWith("/interview/bill-1");
     // archive → push の順序を固定（順序逆転の回帰を検出）
     expect(mockArchive.mock.invocationCallOrder[0]).toBeLessThan(
       mockPush.mock.invocationCallOrder[0]
     );
   });
 
-  it("previewToken 付きではプレビュー詳細URLへ遷移する", async () => {
+  it("previewToken 付きではプレビューの紹介ページへ遷移する", async () => {
     mockArchive.mockResolvedValue({ success: true });
 
     const { result } = renderHook(() =>
@@ -52,7 +52,7 @@ describe("useEndInterview", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      "/preview/bills/bill-1?token=token-1"
+      "/preview/interview/bill-1?token=token-1"
     );
   });
 
@@ -73,7 +73,7 @@ describe("useEndInterview", () => {
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
-  it("アーカイブが失敗してもユーザーは法案詳細へ遷移させる", async () => {
+  it("アーカイブが失敗してもユーザーはインタビュー紹介ページへ遷移させる", async () => {
     mockArchive.mockResolvedValue({ success: false, error: "boom" });
 
     const { result } = renderHook(() => useEndInterview("session-1", "bill-1"));
@@ -83,7 +83,7 @@ describe("useEndInterview", () => {
     });
 
     expect(mockArchive).toHaveBeenCalledWith("session-1");
-    expect(mockPush).toHaveBeenCalledWith("/bills/bill-1");
+    expect(mockPush).toHaveBeenCalledWith("/interview/bill-1");
   });
 
   it("アーカイブが例外を投げてもユーザーは遷移させる", async () => {
@@ -95,6 +95,6 @@ describe("useEndInterview", () => {
       await result.current.endInterview();
     });
 
-    expect(mockPush).toHaveBeenCalledWith("/bills/bill-1");
+    expect(mockPush).toHaveBeenCalledWith("/interview/bill-1");
   });
 });

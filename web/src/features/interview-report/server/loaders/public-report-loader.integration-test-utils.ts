@@ -3,7 +3,6 @@ import {
   cleanupTestBill,
   cleanupTestUser,
   createTestBill,
-  createTestBillContent,
   createTestUser,
   type TestUser,
 } from "@test-utils/utils";
@@ -36,15 +35,14 @@ export async function createPublicReportLoaderContext(
   const bill = await createTestBill();
 
   try {
-    await createTestBillContent(bill.id, { title: billContentTitle });
-
+    // 旧スキーマの bill_contents.title は、インタビューのタイトル（name）に統合された
     const { data: config, error } = await adminClient
-      .from("interview_configs")
-      .insert({
-        bill_id: bill.id,
+      .from("interviews")
+      .update({
         status: "public",
-        name: `公開レポート loader テスト ${Date.now()}`,
+        name: billContentTitle,
       })
+      .eq("id", bill.id)
       .select()
       .single();
     if (error) throw new Error(`interview_config 作成失敗: ${error.message}`);
@@ -104,7 +102,7 @@ export async function createPublicReports(
     .from("interview_sessions")
     .insert(
       Array.from({ length: count }, (_, index) => ({
-        interview_config_id: context.configId,
+        interview_id: context.configId,
         user_id: context.user.id,
         started_at: new Date(now + index).toISOString(),
         completed_at: new Date(now + index + 1000).toISOString(),

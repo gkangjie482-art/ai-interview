@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getInterviewChatLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewChatLink } from "@/features/interviews/shared/utils/interview-links";
 
 interface NewInterviewButtonProps {
   billId: string;

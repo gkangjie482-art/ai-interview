@@ -4,18 +4,14 @@ import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewAdmin } from "@/features/interviews/server/loaders/get-interview";
+import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
 import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
-import { getAuthenticatedUser } from "@/features/interview-session/server/utils/verify-session-ownership";
-import { ExpertRegistrationSection } from "../../client/components/expert-registration-section";
 import { ReportContent } from "../../shared/components/report-content";
-import { isExpertRegistrationTargetRole } from "../../shared/utils/expert-registration-validation";
 import { parseOpinions } from "../../shared/utils/format-utils";
 import { countCharacters } from "../../shared/utils/report-utils";
-import { getExpertRegistrationStatus } from "../loaders/get-expert-registration-status";
 
 interface ReportCompletePageProps {
   reportId: string;
@@ -34,16 +30,10 @@ export async function ReportCompletePage({
 
   const billId = report.bill_id;
 
-  const isExpertRole = isExpertRegistrationTargetRole(report.role);
-  const authResult = await getAuthenticatedUser();
-
-  // 法案・メッセージ・有識者登録状況を並列取得
-  const [bill, messages, isExpertRegistered] = await Promise.all([
-    getBillById(billId),
+  // インタビュー・メッセージを並列取得（回答後に募集終了・非公開になっても表示する）
+  const [bill, messages] = await Promise.all([
+    getInterviewAdmin(billId),
     getInterviewMessages(report.interview_session_id),
-    isExpertRole && authResult.authenticated
-      ? getExpertRegistrationStatus(authResult.userId)
-      : Promise.resolve(false),
   ]);
 
   if (!bill) {
@@ -52,7 +42,7 @@ export async function ReportCompletePage({
 
   const opinions = parseOpinions(report.opinions);
   const characterCount = countCharacters(messages);
-  const billName = bill.bill_content?.title || bill.name;
+  const billName = bill.name;
 
   return (
     <div className="min-h-dvh bg-mirai-surface">
@@ -76,7 +66,7 @@ export async function ReportCompletePage({
 
           {/* 活用メッセージ */}
           <p className="text-sm text-gray-800">
-            いただいた声は政策検討に最大限活用します
+            いただいた声は、運営者がテーマの検討に活用します
           </p>
         </div>
       </div>
@@ -90,7 +80,7 @@ export async function ReportCompletePage({
               インタビューレポート
             </h2>
             <Link
-              href={getBillDetailLink(billId) as Route}
+              href={getInterviewLPLink(bill.slug) as Route}
               className="text-sm text-black underline"
             >
               {billName}
@@ -115,12 +105,7 @@ export async function ReportCompletePage({
             messages={messages}
             roleDescription={report.role_description}
             opinions={opinions}
-          >
-            {/* 有識者リスト登録バナー */}
-            {isExpertRole && !isExpertRegistered && (
-              <ExpertRegistrationSection />
-            )}
-          </ReportContent>
+          />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAnonymousSupabaseUser } from "@/features/chat/client/hooks/use-anonymous-supabase-user";
-import { getPublicReportLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getPublicReportLink } from "@/features/interviews/shared/utils/interview-links";
 import { ReactionButtonsInline } from "@/features/report-reaction/client/components/reaction-buttons-inline";
 import type { ReportReactionData } from "@/features/report-reaction/shared/types";
 import { cn } from "@/lib/utils";

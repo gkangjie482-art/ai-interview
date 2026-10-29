@@ -12,7 +12,7 @@ export async function findReportWithSessionById(reportId: string) {
   const { data, error } = await supabase
     .from("interview_report")
     .select(
-      "*, interview_sessions(user_id, started_at, completed_at, interview_configs(bill_id))"
+      "*, interview_sessions(user_id, started_at, completed_at, interview_id)"
     )
     .eq("id", reportId)
     .single();
@@ -61,31 +61,29 @@ export async function findMessagesBySessionId(sessionId: string) {
 }
 
 /**
- * 議案IDから議案情報を取得（bill_contentsを結合）
+ * インタビューIDからレポート表示用のインタビュー情報を取得
  */
-export async function findBillWithContentById(billId: string) {
+export async function findInterviewSummaryById(interviewId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
-    .from("bills")
-    .select(
-      "id, name, thumbnail_url, share_thumbnail_url, bill_contents(title)"
-    )
-    .eq("id", billId)
+    .from("interviews")
+    .select("id, slug, name, thumbnail_url")
+    .eq("id", interviewId)
     .single();
 
   if (error) {
-    throw new Error(`Failed to fetch bill: ${error.message}`);
+    throw new Error(`Failed to fetch interview: ${error.message}`);
   }
 
   return data;
 }
 
 /**
- * 議案IDから公開インタビューレポートを取得（helpful×5+total_content_richnessの重み付きスコア降順、件数制限あり）
+ * インタビューIDから公開インタビューレポートを取得（おすすめ順＝内容の充実度順、または新着順）
  * 公開条件: is_public_by_admin = true AND is_public_by_user = true
  */
 export async function findPublicReportsByBillId(
-  billId: string,
+  interviewId: string,
   limit: number = 3,
   offset: number = 0,
   stance?: string,
@@ -93,9 +91,9 @@ export async function findPublicReportsByBillId(
 ) {
   const supabase = createAdminClient();
   const { data, error } = await supabase.rpc(
-    "find_public_reports_by_bill_id_ordered_by_reactions",
+    "find_public_reports_by_interview_id",
     {
-      p_bill_id: billId,
+      p_interview_id: interviewId,
       p_limit: limit,
       p_offset: offset,
       p_stance: stance,
@@ -113,12 +111,12 @@ export async function findPublicReportsByBillId(
 }
 
 /**
- * 議案IDからスタンスごとの公開レポート件数を取得
+ * インタビューIDからスタンスごとの公開レポート件数を取得
  */
-export async function countPublicReportsByStance(billId: string) {
+export async function countPublicReportsByStance(interviewId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase.rpc("count_public_reports_by_stance", {
-    p_bill_id: billId,
+    p_interview_id: interviewId,
   });
 
   if (error) {
@@ -131,7 +129,7 @@ export async function countPublicReportsByStance(billId: string) {
 }
 
 /**
- * 議案IDの公開インタビューレポート件数を取得
+ * インタビューIDの公開インタビューレポート件数を取得
  */
 // 公開レポート件数のカウントは web・admin MCP で共有するため
 // @mirai-gikai/shared に集約。既存の呼び出し元はこの re-export 経由で参照する。
@@ -145,9 +143,7 @@ export async function findPublicReportWithSessionById(reportId: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("interview_report")
-    .select(
-      "*, interview_sessions(started_at, completed_at, interview_configs(bill_id))"
-    )
+    .select("*, interview_sessions(started_at, completed_at, interview_id)")
     .eq("id", reportId)
     .eq("is_public_by_admin", true)
     .eq("is_public_by_user", true)
@@ -178,9 +174,9 @@ export async function findUserReportsByInterviewConfigId(
   const { data, error } = await supabase
     .from("interview_report")
     .select(
-      "id, stance, role, role_title, summary, created_at, interview_sessions!inner(interview_config_id, user_id)"
+      "id, stance, role, role_title, summary, created_at, interview_sessions!inner(interview_id, user_id)"
     )
-    .eq("interview_sessions.interview_config_id", interviewConfigId)
+    .eq("interview_sessions.interview_id", interviewConfigId)
     .eq("interview_sessions.user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -251,4 +247,19 @@ export async function updateReportPublicSetting(
   if (error) {
     throw new Error(`Failed to update public setting: ${error.message}`);
   }
+}
+
+/**
+ * レポート画面・OGP画像用に、インタビュー情報を表示用の形で取得する
+ */
+export async function findInterviewForReport(interviewId: string) {
+  const interview = await findInterviewSummaryById(interviewId);
+  return {
+    id: interview.id,
+    slug: interview.slug,
+    name: interview.name,
+    thumbnail_url: interview.thumbnail_url,
+    share_thumbnail_url: null as string | null,
+    bill_contents: { title: interview.name },
+  };
 }

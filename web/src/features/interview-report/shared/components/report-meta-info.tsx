@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { getInterviewChatLogLink } from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewChatLogLink } from "@/features/interviews/shared/utils/interview-links";
 import { ReactionButtonsInline } from "@/features/report-reaction/client/components/reaction-buttons-inline";
 import type { ReportReactionData } from "@/features/report-reaction/shared/types";
 import { formatDateTime } from "../utils/report-utils";
