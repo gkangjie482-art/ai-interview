@@ -8,7 +8,10 @@ import {
 } from "@/features/chat/server/services/cost-tracker";
 import { getInterviewConfigAdmin } from "@/features/interviews/server/loaders/get-interview";
 import { getInterviewQuestions } from "@/features/interviews/server/loaders/get-interview-questions";
-import { DEFAULT_INTERVIEW_CHAT_MODEL } from "@/lib/ai/models";
+import {
+  DEFAULT_INTERVIEW_CHAT_MODEL,
+  INTERVIEW_CHAT_PROVIDER_OPTIONS,
+} from "@/lib/ai/models";
 import { env } from "@/lib/env";
 import { interviewChatTextSchema } from "../../shared/schemas";
 import type { InterviewMessage } from "../../shared/types";
@@ -88,6 +91,7 @@ export async function generateInitialQuestion({
     const result = await generateText({
       model,
       prompt: enhancedSystemPrompt,
+      providerOptions: INTERVIEW_CHAT_PROVIDER_OPTIONS,
       output: Output.object({ schema: interviewChatTextSchema }),
       experimental_telemetry: {
         isEnabled: true,

@@ -33,7 +33,10 @@ import type {
   InterviewMessage,
   InterviewSession,
 } from "@/features/interview-session/shared/types";
-import { DEFAULT_INTERVIEW_CHAT_MODEL } from "@/lib/ai/models";
+import {
+  DEFAULT_INTERVIEW_CHAT_MODEL,
+  INTERVIEW_CHAT_PROVIDER_OPTIONS,
+} from "@/lib/ai/models";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { buildSummaryModelMessages } from "../../shared/utils/build-summary-model-messages";
@@ -335,6 +338,7 @@ async function generateStreamingResponse({
   const streamParams = {
     model,
     system: systemPrompt,
+    providerOptions: INTERVIEW_CHAT_PROVIDER_OPTIONS,
     messages: await convertToModelMessages(uiMessages),
     onError: handleError,
     onFinish: handleFinish,

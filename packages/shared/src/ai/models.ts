@@ -45,6 +45,13 @@ export function isKnownModel(model: string): model is AiModel {
 
 /** インタビューチャットのデフォルトモデル（Vercel AI Gateway の無料枠で使えるもの） */
 export const DEFAULT_INTERVIEW_CHAT_MODEL = AI_MODELS.gpt5_mini;
+/**
+ * インタビューチャット用の providerOptions。
+ * gpt-5 系は既定だと推論量が多く返信開始が遅いため、聞き取り用途では low に抑える（他プロバイダーでは無視される）。
+ */
+export const INTERVIEW_CHAT_PROVIDER_OPTIONS = {
+  openai: { reasoningEffort: "low" },
+} as const;
 /** モデレーション評価のデフォルトモデル */
 export const DEFAULT_MODERATION_MODEL = AI_MODELS.gpt5_2;
 /** コンテンツ充実度評価のデフォルトモデル */
