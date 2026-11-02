@@ -13,7 +13,26 @@ export type Interview = Database["public"]["Tables"]["interviews"]["Row"];
 /** インタビューの設定（AIモード・モデル・所要時間など）。interviews 行そのもの。 */
 export type InterviewConfig = Interview;
 
-export type InterviewListItem = Interview & { publicReportCount: number };
+/** 一覧で配信する項目。背景資料やプロンプト設定などAIだけに渡す項目は含めない */
+const LIST_ITEM_KEYS = [
+  "id",
+  "slug",
+  "name",
+  "summary",
+  "thumbnail_url",
+  "status",
+  "is_featured",
+  "featured_order",
+  "estimated_duration",
+  "closes_at",
+  "published_at",
+  "updated_at",
+] as const satisfies readonly (keyof Interview)[];
+
+export type InterviewListItem = Pick<
+  Interview,
+  (typeof LIST_ITEM_KEYS)[number]
+> & { publicReportCount: number };
 
 /**
  * 公開済みのインタビューを slug または id で取得する
@@ -91,7 +110,9 @@ const _getCachedInterviewList = unstable_cache(
       interviews.map((i) => i.id)
     );
     return interviews.map((i) => ({
-      ...i,
+      ...(Object.fromEntries(
+        LIST_ITEM_KEYS.map((key) => [key, i[key]])
+      ) as Pick<Interview, (typeof LIST_ITEM_KEYS)[number]>),
       publicReportCount: counts.get(i.id) ?? 0,
     }));
   },
