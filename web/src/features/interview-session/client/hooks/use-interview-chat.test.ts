@@ -248,7 +248,7 @@ describe("useInterviewChat", () => {
   });
 
   describe("handleQuickReply", () => {
-    it("クイックリプライ選択: handleSubmitが呼ばれユーザーメッセージが追加される", () => {
+    it("クイックリプライ選択: 送信せず入力欄に入れる", () => {
       const { result } = renderHook(() =>
         useInterviewChat({ billId: DEFAULT_BILL_ID, initialMessages: [] })
       );
@@ -257,24 +257,28 @@ describe("useInterviewChat", () => {
         result.current.handleQuickReply("賛成");
       });
 
-      expect(result.current.messages).toHaveLength(1);
-      expect(result.current.messages[0].role).toBe("user");
-      expect(result.current.messages[0].content).toBe("賛成");
-      expect(mockSubmit).toHaveBeenCalledOnce();
+      expect(result.current.input).toBe("賛成");
+      expect(result.current.messages).toHaveLength(0);
+      expect(mockSubmit).not.toHaveBeenCalled();
     });
 
-    it("ローディング中のクイックリプライ: submitを呼ばない", () => {
-      mockState.isLoading = true;
-
+    it("複数選択できて、同じものをもう一度選ぶと外れる", () => {
       const { result } = renderHook(() =>
         useInterviewChat({ billId: DEFAULT_BILL_ID, initialMessages: [] })
       );
 
       act(() => {
-        result.current.handleQuickReply("賛成");
+        result.current.handleQuickReply("カレー");
       });
+      act(() => {
+        result.current.handleQuickReply("肉じゃが");
+      });
+      expect(result.current.input).toBe("カレー、肉じゃが");
 
-      expect(mockSubmit).not.toHaveBeenCalled();
+      act(() => {
+        result.current.handleQuickReply("カレー");
+      });
+      expect(result.current.input).toBe("肉じゃが");
     });
   });
 

@@ -42,19 +42,20 @@ export function InterviewChatInput({
     setShortcutLabel(getSubmitShortcutLabel(platform));
   }, []);
 
+  // 手入力に加えて、選択肢の選択で文章が変わったときも高さを合わせる
   useEffect(() => {
-    if (!input && textareaRef.current) {
-      textareaRef.current.style.height = "";
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    if (!input) {
+      textarea.style.height = "";
+      return;
     }
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
   }, [input]);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     onInputChange(e.target.value);
-
-    // Auto-resize
-    const textarea = e.target;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
   return (

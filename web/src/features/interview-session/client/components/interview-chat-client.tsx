@@ -120,14 +120,6 @@ export function InterviewChatClient({
     [dismissTimeUpIfNeeded, handleSubmit]
   );
 
-  const handleChatQuickReply = useCallback(
-    (text: string) => {
-      dismissTimeUpIfNeeded();
-      handleQuickReply(text);
-    },
-    [dismissTimeUpIfNeeded, handleQuickReply]
-  );
-
   const handleSkipAction = (text: string) => {
     handleSubmit({ text });
   };
@@ -177,7 +169,7 @@ export function InterviewChatClient({
             {messages.length === 0 && !object && (
               <div className="flex flex-col gap-4">
                 <p className="text-sm font-bold leading-[1.8] text-mirai-text">
-                  法案についてのAIインタビューを開始します。
+                  AIインタビューを開始します。
                 </p>
                 <p className="text-sm text-gray-600">
                   あなたの意見や経験をお聞かせください。
@@ -260,7 +252,8 @@ export function InterviewChatClient({
                   replies.length > 0 && (
                     <QuickReplyButtons
                       replies={replies}
-                      onSelect={handleChatQuickReply}
+                      input={input}
+                      onSelect={handleQuickReply}
                       disabled={isLoading}
                     />
                   )

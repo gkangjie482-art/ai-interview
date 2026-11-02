@@ -15,6 +15,7 @@ import {
 } from "../utils/message-utils";
 import { useInterviewRetry } from "./use-interview-retry";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
+import { toggleQuickReply } from "../utils/quick-reply-input";
 import { useQuickReplies } from "./use-quick-replies";
 
 interface UseInterviewChatProps {
@@ -211,9 +212,9 @@ export function useInterviewChat({
     submitChatMessage(userMessageText, stage);
   };
 
-  // クイックリプライを選択した時の処理
+  // クイックリプライを選択した時の処理（送信はせず、入力欄に入れて修正できるようにする）
   const handleQuickReply = (reply: string) => {
-    handleSubmit({ text: reply });
+    setInput((prev) => toggleQuickReply(prev, reply));
   };
 
   // レポート未生成時（hasReport=false）の「インタビューを続ける」用の再開処理。
