@@ -48,6 +48,10 @@ export const BULK_MODE_DEFAULT_SECTIONS: PromptSections = {
 4. **完了時の案内**: 最後に「これまでの内容をまとめ、レポートを作成します」と伝え、要約フェーズへ進むことを案内してください。`,
 };
 
+function isSkippableQuestion(q: InterviewQuestion): boolean {
+  return Boolean(q.target_audience) || q.priority === "optional";
+}
+
 /**
  * 一括モードで、次に聞く質問に対象者条件か「任意」の優先度があるときだけ、飛ばし方を案内する。
  * 飛ばした質問は skipped_question_ids で消化済みになり、サーバーは次の未回答の質問へ進む。
@@ -58,10 +62,7 @@ function buildBulkSkipGuidance(
   askedQuestionIds: Set<string>,
   timeManagementGuidance: string
 ): string {
-  const skippable =
-    Boolean(nextQuestion.target_audience) ||
-    nextQuestion.priority === "optional";
-  if (!skippable) return "";
+  if (!isSkippableQuestion(nextQuestion)) return "";
 
   const reasons = [
     nextQuestion.target_audience &&
@@ -79,7 +80,7 @@ function buildBulkSkipGuidance(
 
   return `
 ## この質問を飛ばす場合
-次のいずれかに当てはまる場合は、この質問はせずに \`skipped_question_ids\` に "${nextQuestion.id}" を入れ、代わりに下の未回答の質問を上から順に見て、次に聞くべき質問をしてください（その質問のIDを \`question_id\` に、その質問の選択肢を \`quick_replies\` に入れる）。下の質問も同じ理由で飛ばせる場合は、そのIDも \`skipped_question_ids\` に入れてください。
+次のいずれかに当てはまる場合は、この質問は**絶対にせず**、 \`skipped_question_ids\` に "${nextQuestion.id}" を入れ、代わりに下の未回答の質問を上から順に見て、次に聞くべき質問をしてください（その質問のIDを \`question_id\` に、その質問の選択肢を \`quick_replies\` に入れる）。下の質問も同じ理由で飛ばせる場合は、そのIDも \`skipped_question_ids\` に入れてください。
 ${reasons.map((r) => `- ${r}`).join("\n")}
 
 飛ばしたことや対象者条件には触れず、自然に次の質問へ進んでください。当てはまるか分からない場合は、そのままこの質問をしてください。飛ばさない場合は \`skipped_question_ids\` を null にしてください。
@@ -154,7 +155,11 @@ ${sections.cautions}
 - テーマ要約: ${billSummary}
 
 ## 重要指示
-あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。
+${
+  isSkippableQuestion(nextQuestion)
+    ? `次の事前定義質問は **[ID: ${nextQuestion.id}] ${nextQuestion.question}** です。この質問には飛ばしてよい条件があります。**最初に、下の「この質問を飛ばす場合」に当てはまるかを判断してください。** 当てはまらない場合だけ、この質問を行ってください。`
+    : `あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。`
+}
 深掘りや他の話題への逸脱は一切禁止されています。
 
 1つのメッセージにつき、この1つの質問のみをしてください。
