@@ -1,7 +1,7 @@
 {
   "name": "AIインタビュー",
   "short_name": "AIインタビュー",
-  "description": "AIとの対話で、法案やテーマへのあなたの意見をお聞きします",
+  "description": "AIが聞き手となって、テーマごとにあなたの考えや経験をお聞きします",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F7F4F0",

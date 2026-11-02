@@ -22,7 +22,7 @@ export const opinionSchema = z
       .enum(["期待", "懸念"])
       .nullable()
       .describe(
-        "この意見が法案に対して示す期待か懸念か。どちらでもなければ null"
+        "この意見がテーマに対して示す期待か懸念か。どちらでもなければ null"
       ),
     // 意見単位の情報充実度（トピックカードで充実した引用を優先表示するため）
     richness: z
@@ -49,7 +49,7 @@ export const interviewReportSchema = z
       .enum(["for", "against", "neutral"])
       .nullable()
       .describe(
-        "法案に対するユーザーのスタンス。for=賛成、against=反対、neutral=期待と懸念の両方がある"
+        "テーマに対するユーザーのスタンス。for=賛成、against=反対、neutral=期待と懸念の両方がある"
       ),
     role: z
       .enum([
@@ -79,7 +79,7 @@ export const interviewReportSchema = z
       .array(opinionSchema)
       .max(3)
       .describe(
-        "ユーザーの具体的な主張（最大3件）。議案を検討する人にとって示唆として有益な順（具体性・建設性・独自性が高い順）に並べ、先頭ほど有益・重要な主張とする。ユーザー本人の発言のみを根拠にし、インタビュアーの発言・言い換え・提示情報をユーザーの意見として記載しない。本人が明言していない要望・賛成・結論への格上げをしない。元の対話ログにないことは記載しない"
+        "ユーザーの具体的な主張（最大3件）。テーマを検討する人にとって示唆として有益な順（具体性・建設性・独自性が高い順）に並べ、先頭ほど有益・重要な主張とする。ユーザー本人の発言のみを根拠にし、インタビュアーの発言・言い換え・提示情報をユーザーの意見として記載しない。本人が明言していない要望・賛成・結論への格上げをしない。元の対話ログにないことは記載しない"
       ),
     content_richness: contentRichnessResultSchema.describe(
       "インタビューの情報充実度評価"

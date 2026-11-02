@@ -28,7 +28,7 @@ const isDev = process.env.NODE_ENV === "development";
 const isStaging = process.env.VERCEL_TARGET_ENV === "staging";
 const siteTitle = "AIインタビュー";
 const siteDescription =
-  "AIとの対話で、法案やテーマへのあなたの意見をお聞きします";
+  "AIが聞き手となって、テーマごとにあなたの考えや経験をお聞きします";
 const siteName = "AIインタビュー";
 const ogImage = {
   url: "/ogp.jpg",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: siteTitle,
   description: siteDescription,
-  keywords: [siteName, "議案", "政治", "日本", "政策", "解説"],
+  keywords: [siteName, "インタビュー", "AI", "アンケート", "意見"],
   icons: {
     icon: isDev
       ? "/icons/pwa/icon_dev_192_v3.png"

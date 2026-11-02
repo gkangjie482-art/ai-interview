@@ -48,12 +48,12 @@ export function InterviewPublicConsentModal({
               公開を許可した場合、今後AIインタビューにあなたのご意見の要約とインタビュー原文が匿名で掲載されることがあります。
             </ConsentCheckListItem>
             <ConsentCheckListItem>
-              さまざまな意見が公開されることで、より深い法案議論が実現できます。
+              さまざまな意見が公開されることで、このテーマについての議論が深まります。
             </ConsentCheckListItem>
           </div>
 
           <p className="text-sm text-black">
-            非公開で提出した場合でも、ご意見は党内での政策検討に活用させていただきます。
+            非公開で提出した場合でも、回答内容は運営者がこのインタビューの集計や分析に利用します。
           </p>
         </div>
 

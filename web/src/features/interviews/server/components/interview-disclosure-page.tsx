@@ -36,7 +36,7 @@ function StaticDisclosureSection() {
           <div>
             <p className="font-bold">1. 実施目的</p>
             <p className="mt-1">
-              本インタビューを通じて収集された回答データは、今後の政策検討における基礎資料として活用いたします。個人の意見を特定の偏り（バイアス）なく集約し、客観性の高い政策立案に役立てることを目的としています。
+              本インタビューは、テーマについての一人ひとりの考えや経験を聞き取るために実施します。集めた回答は、運営者がテーマについての集計や分析に利用します。
             </p>
           </div>
 
@@ -57,12 +57,14 @@ function StaticDisclosureSection() {
             </p>
             <ul className="mt-2 space-y-2 list-none">
               <li>
-                <span className="font-bold">AI学習への非利用：</span>
-                入力されたデータがAIモデル（Anthropic社等）の学習に再利用されることはありません。
+                <span className="font-bold">外部のAIサービスへの送信：</span>
+                入力内容は、外部のAIサービス事業者（Vercel AI Gateway を経由した
+                OpenAI 等）に送信して処理します。OpenAI の API の規約では、API
+                で送信したデータはモデルの学習に使われないことになっています。
               </li>
               <li>
                 <span className="font-bold">活用の範囲：</span>
-                回答内容は、党内における政策検討、およびAIを用いた統計的分析に限定して活用いたします。
+                回答内容は、このインタビューの集計と、AIを用いた分析に利用します。
               </li>
               <li>
                 <span className="font-bold">分析プロセスの透明化：</span>
@@ -75,7 +77,7 @@ function StaticDisclosureSection() {
               <ul className="mt-1 space-y-2 list-none">
                 <li>
                   <span className="font-bold">公開を希望しない場合：</span>
-                  回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果、または個人を特定できない範囲に匿名化した上で、国会答弁等において引用・活用される場合があります。
+                  回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果や、個人を特定できない形に匿名化した内容を、運営者が集計結果の報告などで紹介する場合があります。
                 </li>
                 <li>
                   <span className="font-bold">公開を希望する場合：</span>

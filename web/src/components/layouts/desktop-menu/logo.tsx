@@ -41,7 +41,7 @@ export function DesktopMenuLogo() {
             lineHeight: "2em",
           }}
         >
-          国会の議論をわかりやすく
+          AIが聞き手のインタビュー
         </p>
       </div>
     </Link>

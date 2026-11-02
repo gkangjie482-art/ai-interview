@@ -15,7 +15,8 @@ export function BackToBillButton({ billId, from }: BackToBillButtonProps) {
     from === "opinions"
       ? routes.interviewSessions(billId)
       : getInterviewLPLink(billId);
-  const label = from === "opinions" ? "レポート一覧に戻る" : "法案の記事に戻る";
+  const label =
+    from === "opinions" ? "レポート一覧に戻る" : "インタビューの紹介に戻る";
 
   return (
     <Link

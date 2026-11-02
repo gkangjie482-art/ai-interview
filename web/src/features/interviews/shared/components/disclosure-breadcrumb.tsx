@@ -13,7 +13,10 @@ export function DisclosureBreadcrumb({
 }: DisclosureBreadcrumbProps) {
   const items = [
     { label: "TOP", href: routes.home() },
-    { label: "法案詳細", href: getInterviewLPLink(billId, previewToken) },
+    {
+      label: "インタビューの紹介",
+      href: getInterviewLPLink(billId, previewToken),
+    },
     {
       label: "AIインタビュー",
       href: getInterviewLPLink(billId, previewToken),

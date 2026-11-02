@@ -15,7 +15,7 @@ export function ReportBreadcrumb({
 }: ReportBreadcrumbProps) {
   const baseItems: BreadcrumbItem[] = [
     { label: "TOP", href: routes.home() },
-    { label: "法案詳細", href: getInterviewLPLink(billId) },
+    { label: "インタビューの紹介", href: getInterviewLPLink(billId) },
     { label: "レポート一覧", href: routes.interviewSessions(billId) },
     {
       label: "レポート",
