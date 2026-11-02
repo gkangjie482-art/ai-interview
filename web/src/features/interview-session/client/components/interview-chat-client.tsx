@@ -39,6 +39,8 @@ interface InterviewChatClientProps {
   sessionStartedAt?: string;
   hasRated?: boolean;
   previewToken?: string;
+  /** クイックリプライを複数選択できる質問のID */
+  multiSelectQuestionIds?: string[];
 }
 
 export function InterviewChatClient({
@@ -52,6 +54,7 @@ export function InterviewChatClient({
   sessionStartedAt,
   hasRated,
   previewToken,
+  multiSelectQuestionIds,
 }: InterviewChatClientProps) {
   const {
     input,
@@ -64,6 +67,7 @@ export function InterviewChatClient({
     streamingReportData,
     currentQuickReplies,
     streamingQuickReplies,
+    allowMultipleReplies,
     canRetry,
     handleSubmit,
     handleQuickReply,
@@ -73,6 +77,7 @@ export function InterviewChatClient({
     billId,
     initialMessages,
     previewToken,
+    multiSelectQuestionIds,
   });
 
   const { remainingMinutes, isTimeUp } = useInterviewTimer({
@@ -253,6 +258,7 @@ export function InterviewChatClient({
                     <QuickReplyButtons
                       replies={replies}
                       input={input}
+                      allowMultiple={allowMultipleReplies}
                       onSelect={handleQuickReply}
                       disabled={isLoading}
                     />

@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +26,7 @@ export function InterviewQuestionForm({
   const questionId = useId();
   const followUpGuideId = useId();
   const quickRepliesId = useId();
+  const allowMultipleId = useId();
   const targetAudienceId = useId();
   const [question, setQuestion] = useState(initialData?.question || "");
   const [followUpGuide, setFollowUpGuide] = useState(
@@ -32,6 +34,9 @@ export function InterviewQuestionForm({
   );
   const [quickRepliesText, setQuickRepliesText] = useState(
     arrayToText(initialData?.quick_replies)
+  );
+  const [allowMultiple, setAllowMultiple] = useState(
+    initialData?.allow_multiple ?? false
   );
   const [targetAudience, setTargetAudience] = useState(
     initialData?.target_audience || ""
@@ -51,6 +56,7 @@ export function InterviewQuestionForm({
         quickRepliesText.trim() !== ""
           ? textToArray(quickRepliesText)
           : undefined,
+      allow_multiple: allowMultiple,
       target_audience: targetAudience.trim() || undefined,
     });
 
@@ -58,6 +64,7 @@ export function InterviewQuestionForm({
     setQuestion("");
     setFollowUpGuide("");
     setQuickRepliesText("");
+    setAllowMultiple(false);
     setTargetAudience("");
   };
 
@@ -69,6 +76,7 @@ export function InterviewQuestionForm({
       setQuestion("");
       setFollowUpGuide("");
       setQuickRepliesText("");
+      setAllowMultiple(false);
       setTargetAudience("");
     }
   };
@@ -115,6 +123,14 @@ export function InterviewQuestionForm({
         <p className="text-sm text-gray-500">
           各クイックリプライを1行ずつ入力してください
         </p>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id={allowMultipleId}
+            checked={allowMultiple}
+            onCheckedChange={(checked) => setAllowMultiple(checked === true)}
+          />
+          <Label htmlFor={allowMultipleId}>複数選択できるようにする</Label>
+        </div>
       </div>
 
       <div className="space-y-2">

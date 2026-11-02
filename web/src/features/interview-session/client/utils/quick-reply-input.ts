@@ -36,3 +36,20 @@ export function toggleQuickReply(input: string, reply: string): string {
     ? `${text}${reply}`
     : `${text}${SEPARATOR}${reply}`;
 }
+
+/** 単一選択の質問用。別の選択肢に切り替えると前の選択肢を入力欄から取り除く */
+export function selectSingleQuickReply(
+  input: string,
+  reply: string,
+  replies: string[]
+): string {
+  if (isQuickReplySelected(input, reply)) {
+    return toggleQuickReply(input, reply);
+  }
+  const cleared = replies.reduce(
+    (text, other) =>
+      isQuickReplySelected(text, other) ? toggleQuickReply(text, other) : text,
+    input
+  );
+  return toggleQuickReply(cleared, reply);
+}

@@ -15,7 +15,10 @@ import {
 } from "../utils/message-utils";
 import { useInterviewRetry } from "./use-interview-retry";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
-import { toggleQuickReply } from "../utils/quick-reply-input";
+import {
+  selectSingleQuickReply,
+  toggleQuickReply,
+} from "../utils/quick-reply-input";
 import { useQuickReplies } from "./use-quick-replies";
 
 interface UseInterviewChatProps {
@@ -23,12 +26,15 @@ interface UseInterviewChatProps {
   initialMessages: InitialMessage[];
   /** プレビュー画面から表示している場合のみ渡す（API側で検証される） */
   previewToken?: string;
+  /** クイックリプライを複数選択できる質問のID */
+  multiSelectQuestionIds?: string[];
 }
 
 export function useInterviewChat({
   billId,
   initialMessages,
   previewToken,
+  multiSelectQuestionIds = [],
 }: UseInterviewChatProps) {
   // 初期メッセージのパース
   const { parsedInitialMessages, initialStage } =
@@ -154,6 +160,14 @@ export function useInterviewChat({
     isLoading: isChatLoading,
   });
 
+  // 今の質問が複数選択できるか（質問に紐づかない深掘りの選択肢は単一選択として扱う）
+  const currentQuestionId = messages.findLast(
+    (m) => m.role === "assistant"
+  )?.questionId;
+  const allowMultipleReplies =
+    currentQuestionId != null &&
+    multiSelectQuestionIds.includes(currentQuestionId);
+
   // objectからreportを取得（chat遷移時はストリーミング中もレポート非表示）
   const streamingReportData =
     object?.next_stage === "chat" ? null : convertPartialReport(object?.report);
@@ -214,7 +228,11 @@ export function useInterviewChat({
 
   // クイックリプライを選択した時の処理（送信はせず、入力欄に入れて修正できるようにする）
   const handleQuickReply = (reply: string) => {
-    setInput((prev) => toggleQuickReply(prev, reply));
+    setInput((prev) =>
+      allowMultipleReplies
+        ? toggleQuickReply(prev, reply)
+        : selectSingleQuickReply(prev, reply, currentQuickReplies)
+    );
   };
 
   // レポート未生成時（hasReport=false）の「インタビューを続ける」用の再開処理。
@@ -260,6 +278,7 @@ export function useInterviewChat({
     streamingReportData,
     currentQuickReplies,
     streamingQuickReplies,
+    allowMultipleReplies,
     canRetry: retry.canRetry,
 
     // アクション

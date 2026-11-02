@@ -84,6 +84,7 @@ export const interviewQuestionSchema = z.object({
     .max(2000, "フォローアップ指針は2000文字以内で入力してください")
     .optional(),
   quick_replies: z.array(z.string().min(1)).optional(),
+  allow_multiple: z.boolean().optional(),
   target_audience: z
     .string()
     .max(500, "対象者条件は500文字以内で入力してください")

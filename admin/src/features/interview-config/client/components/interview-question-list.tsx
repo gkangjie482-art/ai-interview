@@ -113,6 +113,7 @@ export function InterviewQuestionList({
         question: q.question,
         follow_up_guide: q.follow_up_guide || undefined,
         quick_replies: q.quick_replies || undefined,
+        allow_multiple: q.allow_multiple,
         target_audience: q.target_audience || undefined,
       })
     )
@@ -289,6 +290,8 @@ export function InterviewQuestionList({
                                           クイックリプライ:
                                         </span>{" "}
                                         {question.quick_replies.join(", ")}
+                                        {question.allow_multiple &&
+                                          "（複数選択）"}
                                       </div>
                                     )}
                                   {question.target_audience && (

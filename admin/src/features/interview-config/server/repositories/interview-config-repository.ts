@@ -93,6 +93,7 @@ export async function createInterviewQuestions(
     question: string;
     follow_up_guide: string | null;
     quick_replies: string[] | null;
+    allow_multiple: boolean;
     question_order: number;
   }[]
 ): Promise<void> {

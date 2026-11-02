@@ -63,11 +63,10 @@ export default async function InterviewPreviewChatPage({
     notFound();
   }
 
-  // ループモードの場合のみ質問数を取得（プログレスバー用）
-  const questions =
-    interviewConfig.mode === "loop"
-      ? await getInterviewQuestions(interviewConfig.id)
-      : [];
+  const questions = await getInterviewQuestions(interviewConfig.id);
+  const multiSelectQuestionIds = questions
+    .filter((q) => q.allow_multiple)
+    .map((q) => q.id);
 
   // インタビューチャットの初期化処理
   try {
@@ -85,7 +84,10 @@ export default async function InterviewPreviewChatPage({
           sessionId={session.id}
           initialMessages={messages}
           mode={interviewConfig.mode}
-          totalQuestions={questions.length}
+          totalQuestions={
+            interviewConfig.mode === "loop" ? questions.length : 0
+          }
+          multiSelectQuestionIds={multiSelectQuestionIds}
           estimatedDuration={interviewConfig.estimated_duration}
           sessionStartedAt={session.started_at}
           hasRated={session.rating != null}

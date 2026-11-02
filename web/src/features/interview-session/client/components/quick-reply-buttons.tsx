@@ -5,6 +5,7 @@ import { isQuickReplySelected } from "../utils/quick-reply-input";
 interface QuickReplyButtonsProps {
   replies: string[];
   input: string;
+  allowMultiple: boolean;
   onSelect: (reply: string) => void;
   disabled?: boolean;
 }
@@ -12,6 +13,7 @@ interface QuickReplyButtonsProps {
 export function QuickReplyButtons({
   replies,
   input,
+  allowMultiple,
   onSelect,
   disabled = false,
 }: QuickReplyButtonsProps) {
@@ -51,7 +53,8 @@ export function QuickReplyButtons({
         })}
       </div>
       <p className="text-right text-xs text-mirai-text-secondary">
-        複数選べます。選んだ内容は入力欄に入るので、直してから送信できます
+        {allowMultiple && "複数選べます。"}
+        選んだ内容は入力欄に入るので、直してから送信できます
       </p>
     </div>
   );

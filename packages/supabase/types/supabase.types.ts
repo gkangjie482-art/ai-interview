@@ -134,6 +134,7 @@ export type Database = {
       };
       interview_questions: {
         Row: {
+          allow_multiple: boolean;
           created_at: string;
           follow_up_guide: string | null;
           id: string;
@@ -146,6 +147,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          allow_multiple?: boolean;
           created_at?: string;
           follow_up_guide?: string | null;
           id?: string;
@@ -157,6 +159,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          allow_multiple?: boolean;
           created_at?: string;
           follow_up_guide?: string | null;
           id?: string;

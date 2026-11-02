@@ -262,9 +262,22 @@ describe("useInterviewChat", () => {
       expect(mockSubmit).not.toHaveBeenCalled();
     });
 
-    it("複数選択できて、同じものをもう一度選ぶと外れる", () => {
+    const initialMessages = [
+      {
+        id: "1",
+        role: "assistant" as const,
+        content: JSON.stringify({
+          text: "好きな食べ物は？",
+          question_id: "q1",
+          quick_replies: ["カレー", "肉じゃが"],
+        }),
+        created_at: "2026-11-02T00:00:00Z",
+      },
+    ];
+
+    it("単一選択の質問: 別の選択肢を選ぶと入れ替わる", () => {
       const { result } = renderHook(() =>
-        useInterviewChat({ billId: DEFAULT_BILL_ID, initialMessages: [] })
+        useInterviewChat({ billId: DEFAULT_BILL_ID, initialMessages })
       );
 
       act(() => {
@@ -273,6 +286,27 @@ describe("useInterviewChat", () => {
       act(() => {
         result.current.handleQuickReply("肉じゃが");
       });
+
+      expect(result.current.allowMultipleReplies).toBe(false);
+      expect(result.current.input).toBe("肉じゃが");
+    });
+
+    it("複数選択の質問: つなげて入れられ、もう一度選ぶと外れる", () => {
+      const { result } = renderHook(() =>
+        useInterviewChat({
+          billId: DEFAULT_BILL_ID,
+          initialMessages,
+          multiSelectQuestionIds: ["q1"],
+        })
+      );
+
+      act(() => {
+        result.current.handleQuickReply("カレー");
+      });
+      act(() => {
+        result.current.handleQuickReply("肉じゃが");
+      });
+      expect(result.current.allowMultipleReplies).toBe(true);
       expect(result.current.input).toBe("カレー、肉じゃが");
 
       act(() => {
