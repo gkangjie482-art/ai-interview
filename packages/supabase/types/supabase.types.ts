@@ -139,6 +139,7 @@ export type Database = {
           follow_up_guide: string | null;
           id: string;
           interview_id: string;
+          priority: string;
           question: string;
           question_order: number;
           quick_replies: string[] | null;
@@ -152,6 +153,7 @@ export type Database = {
           follow_up_guide?: string | null;
           id?: string;
           interview_id: string;
+          priority?: string;
           question: string;
           question_order: number;
           quick_replies?: string[] | null;
@@ -164,6 +166,7 @@ export type Database = {
           follow_up_guide?: string | null;
           id?: string;
           interview_id?: string;
+          priority?: string;
           question?: string;
           question_order?: number;
           quick_replies?: string[] | null;

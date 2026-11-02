@@ -431,6 +431,7 @@ describe("interviewChatTextSchema", () => {
       text: "こんにちは",
       quick_replies: ["はい", "いいえ"],
       question_id: "q1",
+      skipped_question_ids: null,
       topic_title: "トピック",
       next_stage: "chat" as const,
     };
@@ -443,6 +444,7 @@ describe("interviewChatTextSchema", () => {
       text: "テスト",
       quick_replies: null,
       question_id: "q1",
+      skipped_question_ids: null,
       topic_title: "トピック",
       next_stage: "chat" as const,
     });
@@ -454,6 +456,7 @@ describe("interviewChatTextSchema", () => {
       text: "テスト",
       quick_replies: [],
       question_id: null,
+      skipped_question_ids: null,
       topic_title: "トピック",
       next_stage: "chat" as const,
     });
@@ -465,6 +468,7 @@ describe("interviewChatTextSchema", () => {
       text: "テスト",
       quick_replies: [],
       question_id: "q1",
+      skipped_question_ids: null,
       topic_title: null,
       next_stage: "chat" as const,
     });
@@ -476,6 +480,7 @@ describe("interviewChatTextSchema", () => {
       text: "テスト",
       quick_replies: [],
       question_id: "q1",
+      skipped_question_ids: null,
       topic_title: "トピック",
     });
     expect(result.success).toBe(false);
@@ -485,6 +490,7 @@ describe("interviewChatTextSchema", () => {
     const result = interviewChatTextSchema.safeParse({
       quick_replies: [],
       question_id: "q1",
+      skipped_question_ids: null,
       topic_title: "トピック",
       next_stage: "chat",
     });

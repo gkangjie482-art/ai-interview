@@ -54,3 +54,48 @@ export const QUICK_REPLY_GUIDANCE = `## クイックリプライについて
 - 深掘り質問でも選択肢形式で聞きたい場合は、\`quick_replies\` フィールドに選択肢を含めてください（\`question_id\` は不要です）
 - 「次のうちどれに近いですか？」のように選択を促す質問をする場合は、**必ず** \`quick_replies\` に選択肢を含めてください。テキストだけで選択肢を示してはいけません
 - インタビュイーが質問に答える前に、言葉の意味や質問の趣旨などを聞き返してきた場合は、その疑問に簡潔に答えたうえで、回答待ちになっている質問を改めて尋ねてください。その質問に選択肢があった場合は、**同じ選択肢を必ず \`quick_replies\` にもう一度含めてください**。このとき \`question_id\` は含めないでください（既に尋ねた質問のため）`;
+
+
+const PRIORITY_LABELS: Record<string, string> = {
+  required: "必須",
+  optional: "任意",
+};
+
+/** 質問一覧の各質問に添える優先度・対象者の行（通常の優先度・条件なしなら何も足さない） */
+export function formatQuestionConditions(
+  q: { priority?: string | null; target_audience?: string | null },
+  { includeAudience = true }: { includeAudience?: boolean } = {}
+): string {
+  const priority = q.priority ? PRIORITY_LABELS[q.priority] : undefined;
+  return `${priority ? `\n   優先度: ${priority}` : ""}${
+    includeAudience && q.target_audience
+      ? `\n   対象者: ${q.target_audience}`
+      : ""
+  }`;
+}
+
+/** 優先度か対象者条件が設定された質問があるか */
+export function hasQuestionConditions(
+  questions: { priority?: string | null; target_audience?: string | null }[]
+): boolean {
+  return questions.some(
+    (q) => (q.priority && q.priority !== "normal") || q.target_audience
+  );
+}
+
+/**
+ * 優先度・対象者条件の扱い。管理画面から消せると設定が効かなくなるため固定で差し込む。
+ * 飛ばした質問は skipped_question_ids に入れさせ、サーバーは消化済みとして扱う
+ * （一括モードで同じ質問を出し続けないため）。
+ */
+export function buildQuestionConditionsGuidance(
+  questions: { priority?: string | null; target_audience?: string | null }[]
+): string {
+  if (!hasQuestionConditions(questions)) return "";
+  return `## 質問の優先度と対象者条件
+- 「優先度: 必須」の質問は、時間が足りないときでも省略しないでください。まだ聞いていない必須の質問がある間は、ユーザーが終了を希望した場合を除いて next_stage を "summary" にしないでください（回答を断られた場合は無理に聞き直さない）
+- 「優先度: 任意」の質問は、残り時間が少ないときや、それまでの会話ですでに答えが分かっているときは省略してかまいません
+- 「対象者」が書かれた質問は、これまでの回答からインタビュイーが対象者に当てはまらないと分かる場合は聞かずに飛ばしてください。対象者の確認のためだけの質問はしないでください
+- 飛ばしたことや対象者条件には触れず、自然に次の質問へ進んでください
+- 質問を省略・スキップしたときは、そのIDをレスポンスの \`skipped_question_ids\` フィールドに入れてください（\`question_id\` には入れない）。飛ばした質問がなければ null にしてください`;
+}

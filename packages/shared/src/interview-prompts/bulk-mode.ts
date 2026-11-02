@@ -3,6 +3,8 @@ import {
   COMMON_RESPONSIBILITIES,
   COMMON_STOP_CRITERIA,
   QUICK_REPLY_GUIDANCE,
+  buildQuestionConditionsGuidance,
+  formatQuestionConditions,
 } from "./common-sections";
 import { BILL_CLARIFICATION_GUIDANCE } from "./bill-clarification-guidance";
 import {
@@ -10,7 +12,7 @@ import {
   buildTimeManagementGuidance,
 } from "./stage-transition-guidance";
 import { type PromptSections, resolvePromptSections } from "./sections";
-import type { InterviewPromptInput } from "./types";
+import type { InterviewPromptInput, InterviewQuestion } from "./types";
 
 /** このモードの既定の節。管理画面の上書きが無ければこれを使う。 */
 export const BULK_MODE_DEFAULT_SECTIONS: PromptSections = {
@@ -47,6 +49,47 @@ export const BULK_MODE_DEFAULT_SECTIONS: PromptSections = {
 };
 
 /**
+ * 一括モードで、次に聞く質問に対象者条件か「任意」の優先度があるときだけ、飛ばし方を案内する。
+ * 飛ばした質問は skipped_question_ids で消化済みになり、サーバーは次の未回答の質問へ進む。
+ */
+function buildBulkSkipGuidance(
+  nextQuestion: InterviewQuestion,
+  questions: InterviewQuestion[],
+  askedQuestionIds: Set<string>,
+  timeManagementGuidance: string
+): string {
+  const skippable =
+    Boolean(nextQuestion.target_audience) ||
+    nextQuestion.priority === "optional";
+  if (!skippable) return "";
+
+  const reasons = [
+    nextQuestion.target_audience &&
+      `これまでの回答から、インタビュイーが対象者「${nextQuestion.target_audience}」に当てはまらないと分かる`,
+    nextQuestion.priority === "optional" &&
+      "この質問は優先度「任意」で、残り時間が少ない",
+  ].filter(Boolean);
+  const candidates = questions
+    .filter((q) => q.id !== nextQuestion.id && !askedQuestionIds.has(q.id))
+    .map(
+      (q) =>
+        `- [ID: ${q.id}] ${q.question}${q.quick_replies && q.quick_replies.length > 0 ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}${formatQuestionConditions(q)}`
+    )
+    .join("\n");
+
+  return `
+## この質問を飛ばす場合
+次のいずれかに当てはまる場合は、この質問はせずに \`skipped_question_ids\` に "${nextQuestion.id}" を入れ、代わりに下の未回答の質問を上から順に見て、次に聞くべき質問をしてください（その質問のIDを \`question_id\` に、その質問の選択肢を \`quick_replies\` に入れる）。下の質問も同じ理由で飛ばせる場合は、そのIDも \`skipped_question_ids\` に入れてください。
+${reasons.map((r) => `- ${r}`).join("\n")}
+
+飛ばしたことや対象者条件には触れず、自然に次の質問へ進んでください。当てはまるか分からない場合は、そのままこの質問をしてください。飛ばさない場合は \`skipped_question_ids\` を null にしてください。
+
+未回答の質問:
+${candidates || "（ほかにありません。すべて飛ばした場合は「ここからは、特に気になった点について深くお伺いしていきます」と伝え、これまでの回答について深掘りしてください）"}
+${timeManagementGuidance ? `\n${timeManagementGuidance}\n` : ""}`;
+}
+
+/**
  * Bulk Mode（一括回答優先モード）のシステムプロンプトを構築する純粋関数
  */
 export function buildBulkModeSystemPrompt(
@@ -78,7 +121,7 @@ export function buildBulkModeSystemPrompt(
   const questionsText = questions
     .map(
       (q, index) =>
-        `${index + 1}. [ID: ${q.id}] ${q.question}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
+        `${index + 1}. [ID: ${q.id}] ${q.question}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}${formatQuestionConditions(q)}`
     )
     .join("\n");
 
@@ -119,7 +162,7 @@ ${sections.cautions}
 ## クイックリプライについて
 quick_repliesフィールドについては以下の選択肢のみを使用してください。
 ${nextQuestion.quick_replies && nextQuestion.quick_replies.length > 0 ? nextQuestion.quick_replies.join(", ") : "（クイックリプライなし）"}
-
+${buildBulkSkipGuidance(nextQuestion, questions, askedQuestionIds, timeManagementGuidance)}
 ${stageTransitionGuidance}
 `;
     }
@@ -180,6 +223,8 @@ ${sections.stopCriteria}
 ${sections.questionUsageRules}
 
 ${timeManagementGuidance}
+
+${buildQuestionConditionsGuidance(questions)}
 
 ${QUICK_REPLY_GUIDANCE}
 

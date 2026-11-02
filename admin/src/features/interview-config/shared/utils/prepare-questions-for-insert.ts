@@ -14,6 +14,7 @@ export function prepareQuestionsForInsert(
     follow_up_guide: question.follow_up_guide || null,
     quick_replies: question.quick_replies || null,
     allow_multiple: question.allow_multiple ?? false,
+    priority: question.priority ?? "normal",
     target_audience: question.target_audience || null,
     question_order: index + 1,
   }));

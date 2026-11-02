@@ -31,6 +31,12 @@ export const interviewChatTextSchema = z.object({
   text: z.string(),
   quick_replies: z.array(z.string()).nullable(),
   question_id: z.string().nullable(),
+  skipped_question_ids: z
+    .array(z.string())
+    .nullable()
+    .describe(
+      "対象者条件に当てはまらない・任意で省略したなどの理由で、聞かずに飛ばした事前定義質問のID。なければnull"
+    ),
   topic_title: z.string().nullable(),
   next_stage: interviewStageSchema.describe(
     "インタビューのステージ遷移判定。chat=インタビュー継続、summary=要約フェーズへ移行"
@@ -63,6 +69,7 @@ export const interviewChatResponseSchema = z.object({
   report: interviewReportSchema.optional().nullable(),
   quick_replies: z.array(z.string()).optional().nullable(),
   question_id: z.string().optional().nullable(),
+  skipped_question_ids: z.array(z.string()).optional().nullable(),
   topic_title: z.string().optional().nullable(),
   next_stage: interviewStageSchema.optional(),
 });

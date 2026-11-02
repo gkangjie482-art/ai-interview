@@ -7,8 +7,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { InterviewQuestionInput } from "../../shared/types";
-import { arrayToText, textToArray } from "../../shared/types";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Select,
+} from "@/components/ui/select";
+import type {
+  InterviewQuestionInput,
+  QuestionPriority,
+} from "../../shared/types";
+import {
+  arrayToText,
+  QUESTION_PRIORITY_LABELS,
+  textToArray,
+} from "../../shared/types";
 
 interface InterviewQuestionFormProps {
   onSubmit: (question: InterviewQuestionInput) => void;
@@ -27,6 +41,7 @@ export function InterviewQuestionForm({
   const followUpGuideId = useId();
   const quickRepliesId = useId();
   const allowMultipleId = useId();
+  const priorityId = useId();
   const targetAudienceId = useId();
   const [question, setQuestion] = useState(initialData?.question || "");
   const [followUpGuide, setFollowUpGuide] = useState(
@@ -37,6 +52,9 @@ export function InterviewQuestionForm({
   );
   const [allowMultiple, setAllowMultiple] = useState(
     initialData?.allow_multiple ?? false
+  );
+  const [priority, setPriority] = useState<QuestionPriority>(
+    initialData?.priority ?? "normal"
   );
   const [targetAudience, setTargetAudience] = useState(
     initialData?.target_audience || ""
@@ -57,6 +75,7 @@ export function InterviewQuestionForm({
           ? textToArray(quickRepliesText)
           : undefined,
       allow_multiple: allowMultiple,
+      priority,
       target_audience: targetAudience.trim() || undefined,
     });
 
@@ -65,6 +84,7 @@ export function InterviewQuestionForm({
     setFollowUpGuide("");
     setQuickRepliesText("");
     setAllowMultiple(false);
+    setPriority("normal");
     setTargetAudience("");
   };
 
@@ -77,6 +97,7 @@ export function InterviewQuestionForm({
       setFollowUpGuide("");
       setQuickRepliesText("");
       setAllowMultiple(false);
+      setPriority("normal");
       setTargetAudience("");
     }
   };
@@ -134,17 +155,40 @@ export function InterviewQuestionForm({
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor={priorityId}>優先度</Label>
+        <Select
+          value={priority}
+          onValueChange={(value) => setPriority(value as QuestionPriority)}
+        >
+          <SelectTrigger id={priorityId} className="w-40 bg-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(["required", "normal", "optional"] as const).map((value) => (
+              <SelectItem key={value} value={value}>
+                {QUESTION_PRIORITY_LABELS[value]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-gray-500">
+          必須: 時間が足りなくても必ず聞く ／ 任意:
+          時間が足りないときや、答えがすでに分かっているときは省略してよい
+        </p>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor={targetAudienceId}>対象者条件（任意）</Label>
         <Textarea
           id={targetAudienceId}
           value={targetAudience}
           onChange={(e) => setTargetAudience(e.target.value)}
-          placeholder="例: 当該分野の専門家、業界従事者"
+          placeholder="例: 防災アプリを入れている人、訓練に参加したことがある人"
           className="min-h-[60px] resize-y"
           maxLength={500}
         />
         <p className="text-sm text-gray-500">
-          targetedモード時、指定された対象者にのみ質問を行います（未指定なら全員）。LLMが会話文脈から該当性を判定します。
+          指定した対象者にだけ質問します（未指定なら全員）。AIがそれまでの回答から当てはまるかを判断し、当てはまらない人には聞かずに飛ばします。
         </p>
       </div>
 

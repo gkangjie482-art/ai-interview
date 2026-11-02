@@ -57,6 +57,13 @@ describe("モード別システムプロンプト", () => {
     ).toMatchSnapshot();
   });
 
+  // 対象者条件のある質問が次に来たときは、飛ばし方の案内と残りの質問が付く。
+  it("一括モードの次質問に対象者条件があるときの全文", () => {
+    expect(
+      buildBulkModeSystemPrompt({ ...baseInput, nextQuestionId: "q2" })
+    ).toMatchSnapshot();
+  });
+
   it("対象者指定モードの全文", () => {
     expect(buildTargetedModeSystemPrompt(baseInput)).toMatchSnapshot();
   });

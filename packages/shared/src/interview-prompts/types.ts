@@ -53,11 +53,15 @@ export interface InterviewQuestion {
   quick_replies?: string[] | null;
   follow_up_guide?: string | null;
   /**
-   * 対象者条件（任意）。targeted モードでのみ参照される。
+   * 対象者条件（任意）。全モードで参照される。
    * 指定された場合、LLM が会話文脈から該当性を判定し、非該当なら質問をスキップする。
    */
   target_audience?: string | null;
+  /** 優先度。required=必ず聞く、optional=時間が足りなければ省略してよい（未指定は normal） */
+  priority?: QuestionPriority | string | null;
 }
+
+export type QuestionPriority = "required" | "normal" | "optional";
 
 /**
  * システムプロンプト構築用パラメータ（純粋関数用）

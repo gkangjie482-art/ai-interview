@@ -29,6 +29,7 @@ export function parseMessageContent(content: string): {
   report: InterviewReportViewData | null;
   quickReplies: string[];
   questionId: string | null;
+  skippedQuestionIds: string[];
   topicTitle: string | null;
 } {
   try {
@@ -44,6 +45,11 @@ export function parseMessageContent(content: string): {
       const quickReplies = Array.isArray(parsed.quick_replies)
         ? parsed.quick_replies.filter(
             (r: unknown): r is string => typeof r === "string" && r.length > 0
+          )
+        : [];
+      const skippedQuestionIds = Array.isArray(parsed.skipped_question_ids)
+        ? parsed.skipped_question_ids.filter(
+            (id: unknown): id is string => typeof id === "string" && id !== ""
           )
         : [];
       const topicTitle =
@@ -66,6 +72,7 @@ export function parseMessageContent(content: string): {
           report: isValidReport(report) ? report : null,
           quickReplies,
           questionId,
+          skippedQuestionIds,
           topicTitle,
         };
       }
@@ -74,6 +81,7 @@ export function parseMessageContent(content: string): {
         report: null,
         quickReplies,
         questionId,
+        skippedQuestionIds,
         topicTitle,
       };
     }
@@ -85,6 +93,7 @@ export function parseMessageContent(content: string): {
     report: null,
     quickReplies: [],
     questionId: null,
+    skippedQuestionIds: [],
     topicTitle: null,
   };
 }

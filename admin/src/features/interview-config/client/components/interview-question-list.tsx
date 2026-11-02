@@ -27,7 +27,9 @@ import { saveInterviewQuestions } from "../../server/actions/save-interview-ques
 import type {
   InterviewQuestion,
   InterviewQuestionInput,
+  QuestionPriority,
 } from "../../shared/types";
+import { QUESTION_PRIORITY_LABELS } from "../../shared/types";
 import {
   type SortableQuestion,
   toInputs,
@@ -114,6 +116,7 @@ export function InterviewQuestionList({
         follow_up_guide: q.follow_up_guide || undefined,
         quick_replies: q.quick_replies || undefined,
         allow_multiple: q.allow_multiple,
+        priority: q.priority as QuestionPriority,
         target_audience: q.target_audience || undefined,
       })
     )
@@ -274,6 +277,22 @@ export function InterviewQuestionList({
                                     <div className="font-semibold text-gray-900">
                                       {question.question}
                                     </div>
+                                    {question.priority &&
+                                      question.priority !== "normal" && (
+                                        <span
+                                          className={`shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${
+                                            question.priority === "required"
+                                              ? "bg-red-50 text-red-700"
+                                              : "bg-gray-100 text-gray-600"
+                                          }`}
+                                        >
+                                          {
+                                            QUESTION_PRIORITY_LABELS[
+                                              question.priority
+                                            ]
+                                          }
+                                        </span>
+                                      )}
                                   </div>
                                   {question.follow_up_guide && (
                                     <div className="text-sm text-gray-600">

@@ -4,6 +4,8 @@ import {
   COMMON_EXPERTISE_DETECTION,
   COMMON_STOP_CRITERIA,
   QUICK_REPLY_GUIDANCE,
+  buildQuestionConditionsGuidance,
+  formatQuestionConditions,
 } from "./common-sections";
 import { BILL_CLARIFICATION_GUIDANCE } from "./bill-clarification-guidance";
 import {
@@ -92,7 +94,7 @@ export function buildTargetedModeSystemPrompt(
       const quickRepliesLine = q.quick_replies
         ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}`
         : "";
-      return `${index + 1}. [ID: ${q.id}] ${q.question}${targetAudienceLine}${followUpLine}${quickRepliesLine}`;
+      return `${index + 1}. [ID: ${q.id}] ${q.question}${targetAudienceLine}${followUpLine}${quickRepliesLine}${formatQuestionConditions(q, { includeAudience: false })}`;
     })
     .join("\n");
 
@@ -177,6 +179,8 @@ ${sections.stopCriteria}
 ${sections.questionUsageRules}
 
 ${timeManagementGuidance}
+
+${buildQuestionConditionsGuidance(questions)}
 
 ${QUICK_REPLY_GUIDANCE}
 

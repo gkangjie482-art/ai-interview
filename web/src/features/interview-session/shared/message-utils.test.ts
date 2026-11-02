@@ -128,6 +128,7 @@ describe("parseMessageContent", () => {
       report: null,
       quickReplies: ["はい", "いいえ"],
       questionId: "q1",
+      skippedQuestionIds: [],
       topicTitle: "経済政策",
     });
   });
@@ -139,6 +140,7 @@ describe("parseMessageContent", () => {
       report: null,
       quickReplies: [],
       questionId: null,
+      skippedQuestionIds: [],
       topicTitle: null,
     });
   });
@@ -150,6 +152,7 @@ describe("parseMessageContent", () => {
       report: null,
       quickReplies: [],
       questionId: null,
+      skippedQuestionIds: [],
       topicTitle: null,
     });
   });
@@ -162,6 +165,7 @@ describe("parseMessageContent", () => {
       report: null,
       quickReplies: [],
       questionId: null,
+      skippedQuestionIds: [],
       topicTitle: null,
     });
   });
@@ -245,6 +249,7 @@ describe("parseMessageContent", () => {
     const content = JSON.stringify({
       text: "テスト",
       questionId: "q-camel",
+      skippedQuestionIds: [],
     });
     const result = parseMessageContent(content);
     expect(result.questionId).toBe("q-camel");
@@ -255,6 +260,7 @@ describe("parseMessageContent", () => {
       text: "テスト",
       question_id: "q-snake",
       questionId: "q-camel",
+      skippedQuestionIds: [],
     });
     const result = parseMessageContent(content);
     expect(result.questionId).toBe("q-snake");

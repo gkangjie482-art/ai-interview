@@ -4,6 +4,8 @@ import {
   COMMON_RESPONSIBILITIES,
   COMMON_STOP_CRITERIA,
   QUICK_REPLY_GUIDANCE,
+  buildQuestionConditionsGuidance,
+  formatQuestionConditions,
 } from "./common-sections";
 import { BILL_CLARIFICATION_GUIDANCE } from "./bill-clarification-guidance";
 import {
@@ -72,7 +74,7 @@ export function buildLoopModeSystemPrompt(
   const questionsText = questions
     .map(
       (q, index) =>
-        `${index + 1}. [ID: ${q.id}] ${q.question}${q.follow_up_guide ? `\n   フォローアップ指針: ${q.follow_up_guide}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
+        `${index + 1}. [ID: ${q.id}] ${q.question}${q.follow_up_guide ? `\n   フォローアップ指針: ${q.follow_up_guide}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}${formatQuestionConditions(q)}`
     )
     .join("\n");
 
@@ -140,6 +142,8 @@ ${sections.stopCriteria}
 ${sections.questionUsageRules}
 
 ${timeManagementGuidance}
+
+${buildQuestionConditionsGuidance(questions)}
 
 ${QUICK_REPLY_GUIDANCE}
 

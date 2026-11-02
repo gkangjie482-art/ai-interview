@@ -18,6 +18,21 @@ describe("collectAskedQuestionIds", () => {
     expect(result).toEqual(new Set(["q1"]));
   });
 
+  it("飛ばした質問（skipped_question_ids）も消化済みに含める", () => {
+    const messages = [
+      {
+        role: "assistant",
+        content: JSON.stringify({
+          text: "質問です",
+          question_id: "q3",
+          skipped_question_ids: ["q2"],
+        }),
+      },
+    ];
+    const result = collectAskedQuestionIds(messages);
+    expect(result).toEqual(new Set(["q3", "q2"]));
+  });
+
   it("questionIdキー（キャメルケース）からも抽出できる", () => {
     const messages = [
       {

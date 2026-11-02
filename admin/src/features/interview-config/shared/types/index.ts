@@ -85,11 +85,20 @@ export const interviewQuestionSchema = z.object({
     .optional(),
   quick_replies: z.array(z.string().min(1)).optional(),
   allow_multiple: z.boolean().optional(),
+  priority: z.enum(["required", "normal", "optional"]).optional(),
   target_audience: z
     .string()
     .max(500, "対象者条件は500文字以内で入力してください")
     .optional(),
 });
+
+export type QuestionPriority = "required" | "normal" | "optional";
+
+export const QUESTION_PRIORITY_LABELS: Record<QuestionPriority, string> = {
+  required: "必須",
+  normal: "通常",
+  optional: "任意",
+};
 
 export const interviewQuestionsInputSchema = z.array(interviewQuestionSchema);
 

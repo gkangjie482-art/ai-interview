@@ -6,7 +6,7 @@
 
 interface StageTransitionParams {
   currentStage: string;
-  questions: { id: string; question: string }[];
+  questions: { id: string; question: string; priority?: string | null }[];
   askedQuestionIds: Set<string>;
 }
 
@@ -57,7 +57,7 @@ function calculateProgress(
 }
 
 function buildQuestionLists(
-  questions: { id: string; question: string }[],
+  questions: { id: string; question: string; priority?: string | null }[],
   askedQuestionIds: Set<string>
 ) {
   const completedQuestionsList = questions
@@ -67,7 +67,10 @@ function buildQuestionLists(
 
   const remainingQuestionsList = questions
     .filter((q) => !askedQuestionIds.has(q.id))
-    .map((q) => `  - [ID: ${q.id}] ${q.question}`)
+    .map(
+      (q) =>
+        `  - [ID: ${q.id}] ${q.question}${q.priority === "required" ? "（必須）" : ""}`
+    )
     .join("\n");
 
   return { completedQuestionsList, remainingQuestionsList };
