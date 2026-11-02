@@ -5,6 +5,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { NAV_LINKS } from "@/components/layouts/nav-links";
 import { Button } from "@/components/ui/button";
+import { EXTERNAL_LINKS } from "@/config/external-links";
 import {
   Popover,
   PopoverContent,
@@ -35,7 +36,20 @@ export function HamburgerMenu() {
               {link.label}
             </Link>
           ))}
+          {/* AGPL-3.0 第13条のソースコード公開先と、fork ガイドラインの免責文言。
+              フッターを出さないチャット画面でも辿れるようにメニューにも置く */}
+          <a
+            href={EXTERNAL_LINKS.GITHUB_REPO}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-mirai-surface"
+          >
+            ソースコード
+          </a>
         </nav>
+        <p className="mt-1 border-t border-mirai-border px-3 pt-2 pb-1 text-[11px] leading-[1.6] text-mirai-text-secondary">
+          これは政党チームみらいが運営しているものではありません
+        </p>
       </PopoverContent>
     </Popover>
   );
