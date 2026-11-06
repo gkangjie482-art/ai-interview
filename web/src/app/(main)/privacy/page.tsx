@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Container } from "@/components/layouts/container";
-import {
-  LegalList,
-  LegalPageLayout,
-  LegalParagraph,
-  LegalSectionTitle,
-} from "@/components/layouts/legal-page-layout";
-import { routes } from "@/lib/routes";
+import { LegalPageLayout } from "@/components/layouts/legal-page-layout";
+import { PrivacyContent } from "@/components/legal/privacy-content";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー | AIインタビュー",
@@ -20,133 +14,10 @@ export default function PrivacyPage() {
       className="bg-transparent pt-24 md:pt-12"
       title="プライバシーポリシー"
       enLabel="Privacy Policy"
-      description="AIインタビューの運営者であるコッセ（以下「運営者」といいます）における個人情報の取り扱いについてご説明します。"
+      description="チームみらい学生チームが提供する「AIインタビュー」における個人情報の取り扱いについてご説明します。"
     >
-      <Container className="space-y-8">
-        <p className="text-sm text-mirai-text-muted">
-          最終更新日：2026年10月29日
-        </p>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>1. 個人情報の定義</LegalSectionTitle>
-          <LegalParagraph>
-            個人情報とは、以下のような情報であって、特定の個人を識別することができるものを指します。
-          </LegalParagraph>
-          <LegalList
-            items={[
-              "氏名、年齢、性別、住所、電話番号、職業、メールアドレス",
-              "個人ごとに割り当てられたIDやパスワード、その他識別可能な記号",
-              "運営者の提供するサービスであるAIインタビューにおけるAIインタビュー機能（以下「AIインタビュー機能」といいます。）を通じて取得される対話ログおよび行動履歴",
-              "他の情報と容易に照合することができ、それにより特定の個人を識別できることとなるもの",
-            ]}
-          />
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>2. 個人情報の収集方法と使用範囲</LegalSectionTitle>
-          <LegalParagraph>
-            個人情報をご提供いただく際には、ユーザーの同意に基づいて行うことを原則とします。また、運営者は、以下に定める目的での利用を除き、個人情報を無断で利用することはありません。
-          </LegalParagraph>
-          <LegalList
-            items={[
-              "ユーザーが利用する運営者のサービス（以下「本サービス」といいます。）の運営およびそれに伴うユーザーとのやりとり・情報提供",
-              "本サービスの安全な運営に必要な不正対策",
-              "本サービスの改善・新規開発",
-              "本サービスに係る情報提供",
-              "上記の各利用目的に必要な各種調査・分析",
-              "「3. 第三者への情報提供について」に定める場合における第三者への開示・提供",
-            ]}
-          />
-          <LegalParagraph>
-            なお、AIインタビュー機能を通じて運営者が取得した回答内容については、運営者は、以下の通り取り扱います。
-          </LegalParagraph>
-          <LegalList
-            items={[
-              {
-                id: "publish",
-                content: (
-                  <>
-                    <span className="font-semibold text-slate-800">公開：</span>
-                    ユーザーが回答時に公開に同意した場合に限り、当ウェブサイトや報告書等で公開されることがあります。本人が公開に同意しなかった回答内容は、第三者に公開または提供されることはありません。
-                  </>
-                ),
-              },
-              {
-                id: "statistics",
-                content: (
-                  <>
-                    <span className="font-semibold text-slate-800">
-                      統計的利用：
-                    </span>
-                    取得したデータは、個人を特定できない統計情報に加工した上で、第三者へ公表する場合があります。
-                  </>
-                ),
-              },
-            ]}
-          />
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>3. 第三者への情報提供について</LegalSectionTitle>
-          <LegalParagraph>
-            以下のいずれかに該当する場合を除き、個人情報を第三者に開示・提供することはありません。
-          </LegalParagraph>
-          <LegalList
-            items={[
-              "「2. 個人情報の収集方法と使用範囲」に定めるAIインタビュー機能を通じて運営者が取得した回答内容を、本人が公開に同意した範囲で公開する場合",
-              "ユーザー本人の同意がある場合",
-              "統計的なデータなど、個人を特定できない状態で提供する場合",
-              "法令に基づく開示請求（裁判所・警察等）があった場合",
-              "不正アクセスや規約違反など、緊急の対応が必要と判断された場合",
-            ]}
-          />
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>4. 安全管理措置</LegalSectionTitle>
-          <LegalParagraph>
-            個人情報の適切な管理を行うために、責任者を定め、適切な管理に努めます。なお、AIインタビュー機能では、回答内容を生成AIで処理するため、入力内容を外部のAIサービス事業者（Vercel
-            AI Gateway を経由した OpenAI 等）に送信します。
-          </LegalParagraph>
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>5. Cookie（クッキー）について</LegalSectionTitle>
-          <LegalParagraph>
-            当ウェブサイトでは、利便性向上やログイン状態の維持のためにCookieを使用しています。これらは匿名で収集され、個人を特定するものではありません。
-          </LegalParagraph>
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>6. 保管期間と廃棄</LegalSectionTitle>
-          <LegalParagraph>
-            取得した個人情報および対話ログは、利用目的の達成に必要な期間保管した後、適切な方法で廃棄・削除します。なお、本人の同意に基づき公開された回答内容など運営者の管理を離れた情報は、廃棄・削除を行うことはできないため、継続して公開・提供されることがあります。
-          </LegalParagraph>
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>7. 改訂と通知</LegalSectionTitle>
-          <LegalParagraph>
-            本ポリシーは必要に応じて改訂されます。改訂内容はウェブサイトへの掲載をもって効力を生じるものとし、個別の通知は行いません。
-          </LegalParagraph>
-        </section>
-
-        <section className="space-y-4">
-          <LegalSectionTitle>8. お問い合わせ窓口</LegalSectionTitle>
-          <LegalParagraph>
-            個人情報の確認・修正・削除、またはAIインタビュー機能の回答公開の停止等のご相談は、下記までご連絡ください。
-          </LegalParagraph>
-          <LegalParagraph>
-            <a
-              href="https://forms.gle/qVJEoktwXiSjGuZK7"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-accent underline"
-            >
-              お問い合わせフォーム
-            </a>
-          </LegalParagraph>
-        </section>
+      <Container>
+        <PrivacyContent />
       </Container>
     </LegalPageLayout>
   );

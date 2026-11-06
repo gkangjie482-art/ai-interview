@@ -1,5 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
+import { DISCLAIMER } from "@/config/disclaimer";
 import { EXTERNAL_LINKS } from "@/config/external-links";
 import { routes } from "@/lib/routes";
 import { NAV_LINKS } from "../nav-links";
@@ -55,7 +56,9 @@ export function DesktopMenuLinks() {
           lineHeight: "1.48em",
         }}
       >
-        これは政党チームみらいが運営しているものではありません
+        {DISCLAIMER.NOT_OPERATED_BY_PARTY}
+        <br />
+        {DISCLAIMER.BUILT_BY_STUDENT_TEAM}
       </p>
     </div>
   );

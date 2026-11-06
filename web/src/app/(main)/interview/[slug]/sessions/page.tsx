@@ -21,7 +21,7 @@ export async function generateMetadata({
 
   return {
     title: `公開された会話 - ${title}`,
-    description: `${title}に寄せられ、回答者が公開に同意した会話の一覧`,
+    description: `${title}に寄せられ、公開された会話の一覧`,
   };
 }
 

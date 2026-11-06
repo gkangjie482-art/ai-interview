@@ -1,3 +1,4 @@
+import { SiteDisclaimer } from "@/components/disclaimer/site-disclaimer";
 import { Container } from "@/components/layouts/container";
 import { InterviewCard } from "@/features/interviews/client/components/interview-card";
 import { InterviewList } from "@/features/interviews/client/components/interview-list";
@@ -18,6 +19,7 @@ export default async function Home() {
           <p className="text-[15px] leading-[1.8] text-mirai-text-note">
             AIインタビュアーが、テーマごとにあなたのお話をうかがいます。匿名で参加できます。
           </p>
+          <SiteDisclaimer className="mt-2" />
         </section>
 
         {pickups.length > 0 && (

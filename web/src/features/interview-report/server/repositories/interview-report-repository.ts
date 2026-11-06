@@ -1,6 +1,5 @@
 import "server-only";
 
-import { shouldAutoPublishOnUserSettingChange } from "@mirai-gikai/shared/report-publication/auto-publish";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { SortOrder } from "../../shared/utils/sort-order";
 
@@ -185,68 +184,6 @@ export async function findUserReportsByInterviewConfigId(
   }
 
   return data;
-}
-
-/**
- * レポートの公開設定を更新
- */
-export async function updateReportPublicSetting(
-  reportId: string,
-  isPublic: boolean,
-  isDataReuseConsented?: boolean
-) {
-  const supabase = createAdminClient();
-
-  const { data: report, error: fetchError } = await supabase
-    .from("interview_report")
-    .select(
-      "is_public_by_admin, admin_unpublished_at, moderation_score, total_content_richness"
-    )
-    .eq("id", reportId)
-    .single();
-
-  if (fetchError) {
-    throw new Error(
-      `Failed to fetch report for public setting: ${fetchError.message}`
-    );
-  }
-
-  // 二次利用（オープンデータ提供）同意は、新規約の告知を表示したUIが
-  // 明示的に渡した場合のみ更新する（告知を表示していない旧クライアント
-  // からの呼び出しで同意ありと記録してしまうことを防ぐ）
-  const updateValues: {
-    is_public_by_user: boolean;
-    is_data_reuse_consented?: boolean;
-    is_public_by_admin?: boolean;
-  } = {
-    is_public_by_user: isPublic,
-    ...(typeof isDataReuseConsented === "boolean"
-      ? { is_data_reuse_consented: isDataReuseConsented }
-      : {}),
-  };
-
-  // 管理者が非公開にしたレポート（個別の公開停止・設定の論理削除に伴う一括停止）は
-  // admin_unpublished_at が記録されるため、ユーザー操作では再公開しない。
-  if (
-    shouldAutoPublishOnUserSettingChange({
-      isPublicByAdmin: report.is_public_by_admin,
-      adminUnpublishedAt: report.admin_unpublished_at,
-      isPublicByUser: isPublic,
-      moderationScore: report.moderation_score,
-      totalContentRichness: report.total_content_richness,
-    })
-  ) {
-    updateValues.is_public_by_admin = true;
-  }
-
-  const { error } = await supabase
-    .from("interview_report")
-    .update(updateValues)
-    .eq("id", reportId);
-
-  if (error) {
-    throw new Error(`Failed to update public setting: ${error.message}`);
-  }
 }
 
 /**

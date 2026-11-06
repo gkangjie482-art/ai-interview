@@ -1,12 +1,10 @@
 "use client";
 
-import { ArrowRight, Loader2 } from "lucide-react";
-import type { Route } from "next";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getInterviewChatLink } from "@/features/interviews/shared/utils/interview-links";
+import { InterviewConsentModal } from "@/features/interviews/client/components/interview-consent-modal";
 
 interface NewInterviewButtonProps {
   billId: string;
@@ -17,25 +15,16 @@ export function NewInterviewButton({
   billId,
   previewToken,
 }: NewInterviewButtonProps) {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
 
-  const handleClick = () => {
-    setIsLoading(true);
-    const chatLink = getInterviewChatLink(billId, previewToken);
-    router.push(chatLink as Route);
-  };
-
+  // 新しく回答を始めるときも、そのつど利用規約とプライバシーポリシーへの同意を確かめる
   return (
-    <Button
-      variant="outline"
-      onClick={handleClick}
-      disabled={isLoading}
-      className="w-full bg-white border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4"
-    >
-      {isLoading ? (
-        <Loader2 className="size-5 animate-spin" />
-      ) : (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => setShowConsentModal(true)}
+        className="w-full bg-white border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4"
+      >
         <Image
           src="/icons/messages-square-icon.svg"
           alt=""
@@ -43,9 +32,15 @@ export function NewInterviewButton({
           height={24}
           className="object-contain"
         />
-      )}
-      <span>{isLoading ? "処理中..." : "もう一度新たに回答する"}</span>
-      {!isLoading && <ArrowRight className="size-4" />}
-    </Button>
+        <span>もう一度新たに回答する</span>
+        <ArrowRight className="size-4" />
+      </Button>
+      <InterviewConsentModal
+        open={showConsentModal}
+        onOpenChange={setShowConsentModal}
+        billId={billId}
+        previewToken={previewToken}
+      />
+    </>
   );
 }

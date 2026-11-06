@@ -65,7 +65,7 @@ export default async function HistoryPage() {
                   </span>
                   <span>{formatDate(item.startedAt)}</span>
                   {item.reportId && (
-                    <span>{item.isPublicByUser ? "公開に同意" : "非公開"}</span>
+                    <span>{item.isPublicByUser ? "公開" : "非公開"}</span>
                   )}
                 </div>
                 <Link

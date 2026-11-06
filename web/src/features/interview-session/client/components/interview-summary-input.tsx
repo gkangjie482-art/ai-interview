@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
-import { InterviewPublicConsentModal } from "@/features/interview-report/client/components/interview-public-consent-modal";
 import { useEndInterview } from "../hooks/use-end-interview";
 import { useInterviewCompletion } from "../hooks/use-interview-completion";
 import { InterviewChatInput } from "./interview-chat-input";
@@ -34,7 +32,6 @@ export function InterviewSummaryInput({
   isLoading,
   error,
 }: InterviewSummaryInputProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { isCompleting, completeError, handleSubmit } = useInterviewCompletion({
     sessionId,
   });
@@ -49,12 +46,14 @@ export function InterviewSummaryInput({
       {!isLoading && (
         <div className="mb-3 flex flex-col gap-2">
           {hasReport ? (
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              disabled={isCompleting}
-            >
-              {isCompleting ? "送信中..." : "レポート内容に同意して提出"}
-            </Button>
+            <>
+              <Button onClick={handleSubmit} disabled={isCompleting}>
+                {isCompleting ? "送信中..." : "レポート内容に同意して提出"}
+              </Button>
+              <p className="text-xs leading-[1.7] text-mirai-text-secondary">
+                提出した回答は、レポートとAIとのやりとりの全文が、匿名で本サービス上に公開されます。
+              </p>
+            </>
           ) : (
             <>
               <p className="text-sm font-medium leading-[1.8] text-mirai-text mb-2">
@@ -85,12 +84,6 @@ export function InterviewSummaryInput({
           error={error}
         />
       )}
-      <InterviewPublicConsentModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSubmit={handleSubmit}
-        isSubmitting={isCompleting}
-      />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteDisclaimer } from "@/components/disclaimer/site-disclaimer";
 import {
   LegalList,
   LegalPageLayout,
@@ -37,9 +38,9 @@ export default function AboutPage() {
         <LegalSectionTitle>しくみ</LegalSectionTitle>
         <LegalList
           items={[
-            "運営者がテーマと質問を用意し、AIがチャットで聞き手を務めます。",
+            "チームみらい学生チームがテーマと質問を用意し、AIがチャットで聞き手を務めます。",
             "AIは回答に合わせて深掘りの質問をし、最後に回答の要点をまとめます。",
-            "回答者が公開に同意した会話だけが、サイト上で誰でも読める形で掲載されます。",
+            "提出された会話は、公開に適さない内容を含むものを除いて、サイト上で誰でも読める形で匿名で掲載されます。",
             "AIに渡している指示（プロンプト）は、各インタビューのページから確認できます。",
           ]}
         />
@@ -47,8 +48,9 @@ export default function AboutPage() {
 
       <section className="space-y-4">
         <LegalSectionTitle>運営とソースコード</LegalSectionTitle>
+        <SiteDisclaimer />
         <LegalParagraph>
-          本サービスは、政党チームみらいがオープンソースで公開している「みらい議会」（AGPL-3.0）をもとに改変し、個人が運営しています。これは政党チームみらいが運営しているものではありません。
+          本サービスは、政党チームみらいがオープンソースで公開している「みらい議会」（AGPL-3.0）をもとに、チームみらい学生チームのメンバーが改変して作成し、チームみらい学生チームが運営しています。
         </LegalParagraph>
         <LegalParagraph>
           <ExternalLink href={EXTERNAL_LINKS.GITHUB_REPO}>

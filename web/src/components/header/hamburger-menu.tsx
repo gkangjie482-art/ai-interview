@@ -5,12 +5,13 @@ import type { Route } from "next";
 import Link from "next/link";
 import { NAV_LINKS } from "@/components/layouts/nav-links";
 import { Button } from "@/components/ui/button";
-import { EXTERNAL_LINKS } from "@/config/external-links";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { DISCLAIMER } from "@/config/disclaimer";
+import { EXTERNAL_LINKS } from "@/config/external-links";
 
 export function HamburgerMenu() {
   return (
@@ -48,7 +49,9 @@ export function HamburgerMenu() {
           </a>
         </nav>
         <p className="mt-1 border-t border-mirai-border px-3 pt-2 pb-1 text-[11px] leading-[1.6] text-mirai-text-secondary">
-          これは政党チームみらいが運営しているものではありません
+          <span className="font-bold">{DISCLAIMER.NOT_OPERATED_BY_PARTY}</span>
+          <br />
+          {DISCLAIMER.BUILT_BY_STUDENT_TEAM}
         </p>
       </PopoverContent>
     </Popover>

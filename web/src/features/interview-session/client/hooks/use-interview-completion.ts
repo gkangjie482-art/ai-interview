@@ -17,17 +17,12 @@ export function useInterviewCompletion({
   const [isCompleting, setIsCompleting] = useState(false);
   const [completeError, setCompleteError] = useState<string | null>(null);
 
-  const handleSubmit = async (isPublic: boolean) => {
+  const handleSubmit = async () => {
     setIsCompleting(true);
     setCompleteError(null);
     try {
-      // 新利用規約の告知（オープンデータとしての第三者提供）を表示した上で
-      // 得た公開同意なので、二次利用同意もこのクライアントが明示的に送る
-      const result = await callCompleteApi({
-        sessionId,
-        isPublic,
-        isDataReuseConsented: isPublic,
-      });
+      // 回答はすべて公開する（サーバー側で公開として保存する）
+      const result = await callCompleteApi({ sessionId });
       const reportId = result.report?.id;
       if (reportId) {
         window.location.href = getInterviewReportCompleteLink(reportId);

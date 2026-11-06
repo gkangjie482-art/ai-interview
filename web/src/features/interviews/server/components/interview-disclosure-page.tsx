@@ -36,7 +36,7 @@ function StaticDisclosureSection() {
           <div>
             <p className="font-bold">1. 実施目的</p>
             <p className="mt-1">
-              本インタビューは、テーマについての一人ひとりの考えや経験を聞き取るために実施します。集めた回答は、運営者がテーマについての集計や分析に利用します。
+              本インタビューは、テーマについての一人ひとりの考えや経験を聞き取るために実施します。集めた回答は、チームみらい学生チームが活動の一環としてテーマについての集計や分析に利用し、チームみらいとも共有します。
             </p>
           </div>
 
@@ -64,7 +64,7 @@ function StaticDisclosureSection() {
               </li>
               <li>
                 <span className="font-bold">活用の範囲：</span>
-                回答内容は、このインタビューの集計と、AIを用いた分析に利用します。
+                回答内容は、このインタビューの集計と、AIを用いた分析に利用します。また、チームみらいと共有します。
               </li>
               <li>
                 <span className="font-bold">分析プロセスの透明化：</span>
@@ -73,17 +73,10 @@ function StaticDisclosureSection() {
             </ul>
 
             <div className="mt-3">
-              <p className="font-bold">公開設定に応じた取り扱い：</p>
-              <ul className="mt-1 space-y-2 list-none">
-                <li>
-                  <span className="font-bold">公開を希望しない場合：</span>
-                  回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果や、個人を特定できない形に匿名化した内容を、運営者が集計結果の報告などで紹介する場合があります。
-                </li>
-                <li>
-                  <span className="font-bold">公開を希望する場合：</span>
-                  回答データは「AIインタビュー」上に掲載され、他のユーザーが閲覧可能な状態で公開されます。これにより、利用者間での意見の共有および議論の活性化を図ります。
-                </li>
-              </ul>
+              <p className="font-bold">回答の公開：</p>
+              <p className="mt-1">
+                提出された回答は、レポートとAIとのやりとりの全文が「AIインタビュー」上に匿名で掲載され、誰でも読める状態で公開されます。これにより、利用者間での意見の共有および議論の活性化を図ります。ただし、公開に適さない内容を含む回答は公開しません。
+              </p>
             </div>
           </div>
         </div>

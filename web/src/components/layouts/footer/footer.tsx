@@ -4,6 +4,7 @@ import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { DISCLAIMER } from "@/config/disclaimer";
 import { isInterviewPage } from "@/lib/page-layout-utils";
 import { routes } from "@/lib/routes";
 import { policyLinks, primaryLinks } from "./footer.config";
@@ -94,10 +95,8 @@ function FooterPolicies() {
 function FooterCopyright() {
   return (
     <div className="space-y-2 text-center text-xs font-medium text-slate-800">
-      <p>これは政党チームみらいが運営しているものではありません</p>
-      <p>
-        オープンソースの「みらい議会」（AGPL-3.0）をもとに改変して運営しています
-      </p>
+      <p className="font-bold">{DISCLAIMER.NOT_OPERATED_BY_PARTY}</p>
+      <p>{DISCLAIMER.BUILT_BY_STUDENT_TEAM}</p>
     </div>
   );
 }

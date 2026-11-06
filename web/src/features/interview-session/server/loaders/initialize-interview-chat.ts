@@ -14,7 +14,20 @@ import type { GetUserFn } from "../utils/verify-session-ownership";
 type InitializeInterviewChatDeps = {
   getUser?: GetUserFn;
   model?: LanguageModel;
+  /**
+   * 利用規約・プライバシーポリシーに同意済みか。
+   * false のときは新しいセッションを作らず TermsConsentRequiredError を投げる（進行中のセッションの再開はできる）。
+   */
+  hasTermsConsent?: boolean;
 };
+
+/** 同意を得ないまま新しくインタビューを始めようとしたときのエラー */
+export class TermsConsentRequiredError extends Error {
+  constructor() {
+    super("Terms consent is required to start a new interview session");
+    this.name = "TermsConsentRequiredError";
+  }
+}
 
 type InitializeInterviewChatResult = {
   session: InterviewSession;
@@ -46,6 +59,9 @@ export async function initializeInterviewChat(
   // セッション取得または作成
   let session = await findActiveInterviewSession(interviewConfigId, user.id);
   if (!session) {
+    if (deps?.hasTermsConsent === false) {
+      throw new TermsConsentRequiredError();
+    }
     session = await createInterviewSessionRecord({
       interviewConfigId,
       userId: user.id,

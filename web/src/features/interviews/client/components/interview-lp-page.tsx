@@ -106,7 +106,7 @@ function _HowItWorks({ interview }: { interview: Interview }) {
       </li>
       <li className="flex items-center gap-2">
         <MessageSquareText className="size-5 text-primary" />
-        公開に同意した会話は全文を掲載
+        回答した会話は全文を匿名で掲載
       </li>
       {(themeCount > 0 || duration) && (
         <li className="sm:col-span-2 text-mirai-text-secondary">
@@ -146,7 +146,7 @@ function _Themes({ themes }: { themes: string[] | null }) {
 function _Notice() {
   return (
     <div className="space-y-2 text-[13px] leading-[1.7] text-mirai-text-note">
-      <p>公開に同意した場合は、AIとのやりとり全文がそのまま掲載されます。</p>
+      <p>提出した回答は、AIとのやりとりの全文が匿名でそのまま掲載されます。</p>
       <p>
         氏名・住所・連絡先・勤務先など、個人が特定できる情報は入力しないでください。
       </p>

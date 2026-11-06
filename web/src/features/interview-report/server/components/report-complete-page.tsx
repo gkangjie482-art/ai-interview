@@ -6,7 +6,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getInterviewAdmin } from "@/features/interviews/server/loaders/get-interview";
 import { getInterviewLPLink } from "@/features/interviews/shared/utils/interview-links";
-import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { ReportContent } from "../../shared/components/report-content";
@@ -66,7 +65,7 @@ export async function ReportCompletePage({
 
           {/* 活用メッセージ */}
           <p className="text-sm text-gray-800">
-            いただいた声は、運営者がテーマの検討に活用します
+            いただいた声は、チームみらい学生チームがテーマの検討に活用します
           </p>
         </div>
       </div>
@@ -85,10 +84,9 @@ export async function ReportCompletePage({
             >
               {billName}
             </Link>
-            <PublicStatusSection
-              sessionId={report.interview_session_id}
-              initialIsPublic={report.is_public_by_user}
-            />
+            <p className="text-center text-xs leading-[1.7] text-mirai-text-secondary">
+              この回答は、匿名で本サービス上に公開されます（公開に適さない内容を含む場合を除きます）。
+            </p>
           </div>
 
           {/* レポート本体（共通コンポーネント） */}
